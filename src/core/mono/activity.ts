@@ -22,7 +22,7 @@ const CONTROL_OUTPUTS = new Set(
  * Quais fios e blocos estão "ativos" no ciclo (docs/PLANO.md, Seção 6, decisão 4).
  *
  * Parte dos elementos de estado efetivamente escritos (PC sempre; banco se
- * RegWrite habilitado; memória de dados se MemWrite habilitado) e anda para trás
+ * RegWrite = 1; memória de dados se MemWrite = 1) e anda para trás
  * no grafo. Num mux, segue só a entrada selecionada (e o seletor). A leitura da
  * memória de dados só conta se MemRead = 1. Sinais de controle ativos: os que
  * valem 1 ou que selecionam um mux num caminho ativo.
@@ -59,9 +59,9 @@ export function computeActivity(snapshot: Pick<Snapshot, 'wires'>): Activity {
     for (const p of ports) visitInput(component, p);
   };
 
-  writeTarget('pc', v('reset') === 1 ? ['reset'] : ['in']);
-  if (v('reg_write_enable') === 1) writeTarget('regfile', ['writeReg', 'writeData', 'regWrite']);
-  if (v('mem_write_enable') === 1) writeTarget('dmem', ['address', 'writeData', 'memWrite']);
+  writeTarget('pc', ['in']);
+  if (v('RegWrite') === 1) writeTarget('regfile', ['writeReg', 'writeData', 'regWrite']);
+  if (v('MemWrite') === 1) writeTarget('dmem', ['address', 'writeData', 'memWrite']);
 
   for (const id of CONTROL_OUTPUTS) {
     if (v(id) !== 0) visitWire(id);

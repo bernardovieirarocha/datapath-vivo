@@ -1,12 +1,11 @@
 import type { ComponentSpec, Netlist, PortRef, WireKind, WireSpec } from '../netlist';
 
 /**
- * Netlist do processador monociclo da Prática 10 (`processador.v`).
+ * Netlist do datapath monociclo da aula (Aula 06, slide com jump; P&H fig. 4.24).
  * Os ids dos fios são as chaves do snapshot e os ids do SVG.
  */
 
 export type MonoKind =
-  | 'input'
   | 'const'
   | 'pc'
   | 'imem'
@@ -21,31 +20,21 @@ export type MonoKind =
   | 'adder'
   | 'shiftLeft2'
   | 'and'
-  | 'andNot'
   | 'jumpConcat';
 
 type C = ComponentSpec<MonoKind>;
 
 const out = (name: string, ...deps: string[]) => ({ name, deps });
 
-const mux = (id: string, label: string, verilog: string): C => ({
+const mux = (id: string, label: string): C => ({
   id,
   kind: 'mux',
   label,
-  verilog,
   inputs: ['sel', 'in0', 'in1'],
   outputs: [out('out', 'sel', 'in0', 'in1')],
 });
 
 const COMPONENTS: readonly C[] = [
-  {
-    id: 'resetIn',
-    kind: 'input',
-    label: 'Reset',
-    verilog: 'reset (KEY[0])',
-    inputs: [],
-    outputs: [out('out')],
-  },
   {
     id: 'const4',
     kind: 'const',
@@ -58,17 +47,14 @@ const COMPONENTS: readonly C[] = [
     id: 'pc',
     kind: 'pc',
     label: 'PC',
-    verilog: 'countPC PCU',
-    inputs: ['in', 'reset'],
+    inputs: ['in'],
     edgeInputs: ['in'],
-    // Reset assíncrono: com reset = 1 a saída já é 0 no mesmo ciclo.
-    outputs: [out('out', 'reset')],
+    outputs: [out('out')],
   },
   {
     id: 'pcAdder',
     kind: 'adder',
     label: 'Somador PC+4',
-    verilog: 'fulladder32bits PC_ADDER',
     inputs: ['a', 'b'],
     outputs: [out('sum', 'a', 'b')],
   },
@@ -76,7 +62,6 @@ const COMPONENTS: readonly C[] = [
     id: 'imem',
     kind: 'imem',
     label: 'Memória de Instruções',
-    verilog: 'MemoriaInstrucao IMEM',
     inputs: ['address'],
     outputs: [out('instruction', 'address')],
   },
@@ -84,7 +69,6 @@ const COMPONENTS: readonly C[] = [
     id: 'fields',
     kind: 'fields',
     label: 'Campos da instrução',
-    verilog: 'processador.v (opcode, rs, rt, rd, imm16, funct)',
     inputs: ['instruction'],
     outputs: [
       out('opcode', 'instruction'),
@@ -100,7 +84,6 @@ const COMPONENTS: readonly C[] = [
     id: 'control',
     kind: 'control',
     label: 'Controle',
-    verilog: 'controle_principal CTRL',
     inputs: ['opcode'],
     outputs: [
       'RegDst',
@@ -114,20 +97,11 @@ const COMPONENTS: readonly C[] = [
       'Jump',
     ].map((s) => out(s, 'opcode')),
   },
-  mux('muxRegDst', 'Mux RegDst', 'mux2to1 MUX_WRITEREG'),
-  {
-    id: 'regWriteGate',
-    kind: 'andNot',
-    label: 'RegWrite & ~reset',
-    verilog: 'reg_write_enable',
-    inputs: ['a', 'notB'],
-    outputs: [out('out', 'a', 'notB')],
-  },
+  mux('muxRegDst', 'Mux RegDst'),
   {
     id: 'regfile',
     kind: 'regfile',
     label: 'Banco de Registradores',
-    verilog: 'BancoReg REGS',
     inputs: ['read1', 'read2', 'writeReg', 'writeData', 'regWrite'],
     edgeInputs: ['writeReg', 'writeData', 'regWrite'],
     outputs: [out('data1', 'read1'), out('data2', 'read2')],
@@ -136,16 +110,14 @@ const COMPONENTS: readonly C[] = [
     id: 'signExt',
     kind: 'signExt',
     label: 'Extensão de Sinal',
-    verilog: 'SignExtender SE',
     inputs: ['in'],
     outputs: [out('out', 'in')],
   },
-  mux('muxALUSrc', 'Mux ALUSrc', 'mux2to1 MUX_ALU_B'),
+  mux('muxALUSrc', 'Mux ALUSrc'),
   {
     id: 'aluControl',
     kind: 'aluControl',
     label: 'Controle da ULA',
-    verilog: 'aluControl ALU_CTRL',
     inputs: ['aluOp', 'funct'],
     outputs: [out('op', 'aluOp', 'funct')],
   },
@@ -153,37 +125,22 @@ const COMPONENTS: readonly C[] = [
     id: 'alu',
     kind: 'alu',
     label: 'ULA',
-    verilog: 'ula ALU',
     inputs: ['a', 'b', 'op'],
-    outputs: [
-      out('result', 'a', 'b', 'op'),
-      out('zero', 'a', 'b', 'op'),
-      out('overflow', 'a', 'b', 'op'),
-    ],
-  },
-  {
-    id: 'memWriteGate',
-    kind: 'andNot',
-    label: 'MemWrite & ~reset',
-    verilog: 'mem_write_enable',
-    inputs: ['a', 'notB'],
-    outputs: [out('out', 'a', 'notB')],
+    outputs: [out('result', 'a', 'b', 'op'), out('zero', 'a', 'b', 'op')],
   },
   {
     id: 'dmem',
     kind: 'dmem',
     label: 'Memória de Dados',
-    verilog: 'MemoriaDados DMEM',
     inputs: ['address', 'writeData', 'memRead', 'memWrite'],
     edgeInputs: ['writeData', 'memWrite'],
     outputs: [out('readData', 'address', 'memRead')],
   },
-  mux('muxMemtoReg', 'Mux MemtoReg', 'mux2to1 MUX_WRITEBACK'),
+  mux('muxMemtoReg', 'Mux MemtoReg'),
   {
     id: 'shiftBranch',
     kind: 'shiftLeft2',
     label: 'Shift left 2',
-    verilog: "branch_offset = {imm_ext[29:0], 2'b00}",
     inputs: ['in'],
     outputs: [out('out', 'in')],
   },
@@ -191,7 +148,6 @@ const COMPONENTS: readonly C[] = [
     id: 'branchAdder',
     kind: 'adder',
     label: 'Somador do desvio',
-    verilog: 'fulladder32bits BRANCH_ADDER',
     inputs: ['a', 'b'],
     outputs: [out('sum', 'a', 'b')],
   },
@@ -199,16 +155,14 @@ const COMPONENTS: readonly C[] = [
     id: 'branchAnd',
     kind: 'and',
     label: 'AND (Branch · Zero)',
-    verilog: 'PCSrc = Branch & zero',
     inputs: ['a', 'b'],
     outputs: [out('out', 'a', 'b')],
   },
-  mux('muxPCSrc', 'Mux PCSrc', 'mux2to1 MUX_BRANCH'),
+  mux('muxPCSrc', 'Mux PCSrc'),
   {
     id: 'shiftJump',
     kind: 'shiftLeft2',
     label: 'Shift left 2',
-    verilog: "{jump_addr, 2'b00}",
     inputs: ['in'],
     outputs: [out('out', 'in')],
   },
@@ -216,11 +170,10 @@ const COMPONENTS: readonly C[] = [
     id: 'jumpConcat',
     kind: 'jumpConcat',
     label: '{PC+4[31:28], …}',
-    verilog: "jump_target = {pc_plus_4[31:28], jump_addr, 2'b00}",
     inputs: ['pcPlus4', 'shifted'],
     outputs: [out('out', 'pcPlus4', 'shifted')],
   },
-  mux('muxJump', 'Mux Jump', 'mux2to1 MUX_JUMP'),
+  mux('muxJump', 'Mux Jump'),
 ];
 
 const p = (ref: string): PortRef => {
@@ -238,7 +191,6 @@ const w = (id: string, width: number, kind: WireKind, from: string, ...to: strin
 
 // prettier-ignore
 const WIRES: readonly WireSpec[] = [
-  w('reset',             1, 'controle',  'resetIn.out',        'pc.reset', 'regWriteGate.notB', 'memWriteGate.notB'),
   w('const_4',          32, 'dados',     'const4.out',         'pcAdder.b'),
   w('pc',               32, 'endereco',  'pc.out',             'imem.address', 'pcAdder.a'),
   w('pc_plus_4',        32, 'endereco',  'pcAdder.sum',        'muxPCSrc.in0', 'branchAdder.a', 'jumpConcat.pcPlus4'),
@@ -255,12 +207,11 @@ const WIRES: readonly WireSpec[] = [
   w('MemRead',           1, 'controle',  'control.MemRead',    'dmem.memRead'),
   w('MemtoReg',          1, 'controle',  'control.MemtoReg',   'muxMemtoReg.sel'),
   w('ALUOp',             2, 'controle',  'control.ALUOp',      'aluControl.aluOp'),
-  w('MemWrite',          1, 'controle',  'control.MemWrite',   'memWriteGate.a'),
+  w('MemWrite',          1, 'controle',  'control.MemWrite',   'dmem.memWrite'),
   w('ALUSrc',            1, 'controle',  'control.ALUSrc',     'muxALUSrc.sel'),
-  w('RegWrite',          1, 'controle',  'control.RegWrite',   'regWriteGate.a'),
+  w('RegWrite',          1, 'controle',  'control.RegWrite',   'regfile.regWrite'),
   w('Jump',              1, 'controle',  'control.Jump',       'muxJump.sel'),
   w('write_reg',         5, 'instrucao', 'muxRegDst.out',      'regfile.writeReg'),
-  w('reg_write_enable',  1, 'controle',  'regWriteGate.out',   'regfile.regWrite'),
   w('rd1',              32, 'dados',     'regfile.data1',      'alu.a'),
   w('rd2',              32, 'dados',     'regfile.data2',      'muxALUSrc.in0', 'dmem.writeData'),
   w('imm_ext',          32, 'dados',     'signExt.out',        'muxALUSrc.in1', 'shiftBranch.in'),
@@ -268,8 +219,6 @@ const WIRES: readonly WireSpec[] = [
   w('alu_ctl',           3, 'controle',  'aluControl.op',      'alu.op'),
   w('alu_result',       32, 'dados',     'alu.result',         'dmem.address', 'muxMemtoReg.in0'),
   w('zero',              1, 'controle',  'alu.zero',           'branchAnd.b'),
-  w('overflow',          1, 'controle',  'alu.overflow'),
-  w('mem_write_enable',  1, 'controle',  'memWriteGate.out',   'dmem.memWrite'),
   w('mem_read_data',    32, 'dados',     'dmem.readData',      'muxMemtoReg.in1'),
   w('write_data',       32, 'dados',     'muxMemtoReg.out',    'regfile.writeData'),
   w('branch_offset',    32, 'endereco',  'shiftBranch.out',    'branchAdder.b'),

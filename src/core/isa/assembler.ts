@@ -1,10 +1,9 @@
-import { u32 } from '../bits';
 import { encode } from './encoding';
 import { findSpec, type Instruction, type InstructionSpec, type Syntax } from './instructions';
 import { parseRegister } from './registers';
 
-/** Tamanho da memória de instruções da Prática 10 (`MemoriaInstrucao.v`): 32 palavras. */
-export const IMEM_WORDS = 32;
+/** Tamanho da memória de instruções simulada: 64 palavras (256 bytes). */
+export const IMEM_WORDS = 64;
 
 export interface AsmError {
   /** Linha no texto-fonte, começando em 1. */
@@ -34,7 +33,7 @@ export type AssembleResult = { ok: true; program: Program } | { ok: false; error
 export interface AssembleOptions {
   /** Aceitar bne, slti, jal, jr (Laboratório de Extensão). Padrão: false. */
   extensions?: boolean;
-  /** Máximo de instruções. Padrão: 32 (memória de instruções do lab). */
+  /** Máximo de instruções. Padrão: `IMEM_WORDS`. */
   maxWords?: number;
 }
 
@@ -77,12 +76,12 @@ interface Statement {
 }
 
 /**
- * Monta um programa em Assembly (subconjunto do hardware da Prática 10).
+ * Monta um programa em Assembly (subconjunto do datapath da aula).
  *
  * Aceita: rótulos (`loop:`), comentários `#`, registradores `$8`/`$t0`/`$zero`,
  * imediatos decimais, hex (`0x1F`) ou binários (`0b101`), `beq` com rótulo ou
  * deslocamento numérico (em palavras, relativo a PC+4), `j` com rótulo ou
- * endereço numérico (em bytes), e `nop`. O programa começa no endereço 0.
+ * valor numérico do campo de 26 bits (como no slide: `j 96` → campo 96), e `nop`. O programa começa no endereço 0.
  * Todos os erros são coletados (não para no primeiro).
  */
 export function assemble(source: string, opts: AssembleOptions = {}): AssembleResult {
@@ -111,7 +110,7 @@ export function assemble(source: string, opts: AssembleOptions = {}): AssembleRe
   if (statements.length > maxWords) {
     errors.push({
       line: statements[maxWords]!.line,
-      message: `o programa passa de ${maxWords} instruções — a memória de instruções da Prática 10 só tem ${maxWords} palavras`,
+      message: `o programa passa de ${maxWords} instruções — a memória de instruções do simulador só tem ${maxWords} palavras`,
     });
   }
 
@@ -165,12 +164,12 @@ function parseStatement(
   const spec = findSpec(mnemonic);
   if (!spec) {
     fail(
-      `instrução desconhecida "${m[1]}". O hardware da Prática 10 tem: add, sub, and, or, slt, addi, lw, sw, beq, j`,
+      `instrução desconhecida "${m[1]}". O datapath da aula tem: add, sub, and, or, slt, addi, lw, sw, beq, j`,
     );
   }
-  if (!spec.hardware && !extensions) {
+  if (!spec.base && !extensions) {
     fail(
-      `${spec.mnemonic} não existe no processador da Prática 10 — ela é assunto do Laboratório de Extensão`,
+      `${spec.mnemonic} não faz parte do datapath da aula — ela é assunto do Laboratório de Extensão`,
     );
   }
 
@@ -214,7 +213,7 @@ function build(
         imm: branchOffset(c, address, labels),
       };
     case 'target':
-      return { mnemonic: spec.mnemonic as 'j', target: jumpTarget(a, address, labels) };
+      return { mnemonic: spec.mnemonic as 'j', target: jumpTarget(a, labels) };
   }
 }
 
@@ -268,23 +267,18 @@ function branchOffset(text: string, address: number, labels: Record<string, numb
   return v;
 }
 
-function jumpTarget(text: string, address: number, labels: Record<string, number>): number {
-  let dest: number;
+function jumpTarget(text: string, labels: Record<string, number>): number {
   if (isLabelName(text)) {
-    const d = labels[text];
-    if (d === undefined) fail(`rótulo "${text}" não foi definido`);
-    dest = d;
-  } else {
-    const v = parseNumber(text);
-    if (v === undefined || v < 0 || v > 0xffffffff) {
-      fail(`endereço de salto inválido "${text}" (use um rótulo ou um endereço em bytes)`);
-    }
-    if (v % 4 !== 0) fail(`endereço de salto ${text} não é múltiplo de 4`);
-    dest = v;
+    const dest = labels[text];
+    if (dest === undefined) fail(`rótulo "${text}" não foi definido`);
+    // O programa começa em 0 e é pequeno: o destino está sempre na região de PC+4[31:28].
+    return dest >>> 2;
   }
-  const region = u32(address + 4) & 0xf0000000;
-  if ((u32(dest) & 0xf0000000) !== region) {
-    fail(`o endereço ${text} está fora da região de 256 MB de PC+4 — o j não alcança`);
+  const v = parseNumber(text);
+  if (v === undefined || v < 0 || v > 0x3ffffff) {
+    fail(
+      `destino do salto inválido "${text}" (use um rótulo ou o valor do campo de 26 bits, 0 a 67108863)`,
+    );
   }
-  return (u32(dest) >>> 2) & 0x3ffffff;
+  return v;
 }

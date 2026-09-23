@@ -1,3 +1,3 @@
-# core/mono/components — Fase 2
+# core/mono/components
 
-Um arquivo por bloco do hardware: pc, imem, regfile, alu, aluControl, control, dmem, muxes, adders, signExt.
+Um arquivo por tipo de bloco do datapath: ULA, controle da ULA, controle principal, memórias, somador/mux/shift/extensão de sinal.

@@ -1,7 +1,7 @@
 /**
  * Tabela de instruções (docs/PLANO.md, Seção 2.2).
- * `hardware: true` = existe no processador da Prática 10.
- * `hardware: false` = subconjunto de AOC1 que o lab não tem (Laboratório de Extensão, M8).
+ * `base: true` = instrução do datapath ensinado em aula (Aula 06; addi incluída).
+ * `base: false` = instruções que o datapath da aula não tem (Laboratório de Extensão, M8).
  */
 
 export type Format = 'R' | 'I' | 'J';
@@ -22,7 +22,7 @@ export interface InstructionSpec {
   /** Só para o formato R. */
   funct?: number;
   syntax: Syntax;
-  hardware: boolean;
+  base: boolean;
 }
 
 export type RMnemonic = 'add' | 'sub' | 'and' | 'or' | 'slt';
@@ -31,21 +31,21 @@ export type Mnemonic =
 
 // prettier-ignore
 export const INSTRUCTIONS: readonly InstructionSpec[] = [
-  { mnemonic: 'add', format: 'R', opcode: 0b000000, funct: 0b100000, syntax: 'rd,rs,rt', hardware: true },
-  { mnemonic: 'sub', format: 'R', opcode: 0b000000, funct: 0b100010, syntax: 'rd,rs,rt', hardware: true },
-  { mnemonic: 'and', format: 'R', opcode: 0b000000, funct: 0b100100, syntax: 'rd,rs,rt', hardware: true },
-  { mnemonic: 'or', format: 'R', opcode: 0b000000, funct: 0b100101, syntax: 'rd,rs,rt', hardware: true },
-  { mnemonic: 'slt', format: 'R', opcode: 0b000000, funct: 0b101010, syntax: 'rd,rs,rt', hardware: true },
-  { mnemonic: 'addi', format: 'I', opcode: 0b001000, syntax: 'rt,rs,imm', hardware: true },
-  { mnemonic: 'lw', format: 'I', opcode: 0b100011, syntax: 'rt,imm(rs)', hardware: true },
-  { mnemonic: 'sw', format: 'I', opcode: 0b101011, syntax: 'rt,imm(rs)', hardware: true },
-  { mnemonic: 'beq', format: 'I', opcode: 0b000100, syntax: 'rs,rt,offset', hardware: true },
-  { mnemonic: 'j', format: 'J', opcode: 0b000010, syntax: 'target', hardware: true },
-  // Extensão (não existem no hardware do lab)
-  { mnemonic: 'bne', format: 'I', opcode: 0b000101, syntax: 'rs,rt,offset', hardware: false },
-  { mnemonic: 'slti', format: 'I', opcode: 0b001010, syntax: 'rt,rs,imm', hardware: false },
-  { mnemonic: 'jal', format: 'J', opcode: 0b000011, syntax: 'target', hardware: false },
-  { mnemonic: 'jr', format: 'R', opcode: 0b000000, funct: 0b001000, syntax: 'rs', hardware: false },
+  { mnemonic: 'add', format: 'R', opcode: 0b000000, funct: 0b100000, syntax: 'rd,rs,rt', base: true },
+  { mnemonic: 'sub', format: 'R', opcode: 0b000000, funct: 0b100010, syntax: 'rd,rs,rt', base: true },
+  { mnemonic: 'and', format: 'R', opcode: 0b000000, funct: 0b100100, syntax: 'rd,rs,rt', base: true },
+  { mnemonic: 'or', format: 'R', opcode: 0b000000, funct: 0b100101, syntax: 'rd,rs,rt', base: true },
+  { mnemonic: 'slt', format: 'R', opcode: 0b000000, funct: 0b101010, syntax: 'rd,rs,rt', base: true },
+  { mnemonic: 'addi', format: 'I', opcode: 0b001000, syntax: 'rt,rs,imm', base: true },
+  { mnemonic: 'lw', format: 'I', opcode: 0b100011, syntax: 'rt,imm(rs)', base: true },
+  { mnemonic: 'sw', format: 'I', opcode: 0b101011, syntax: 'rt,imm(rs)', base: true },
+  { mnemonic: 'beq', format: 'I', opcode: 0b000100, syntax: 'rs,rt,offset', base: true },
+  { mnemonic: 'j', format: 'J', opcode: 0b000010, syntax: 'target', base: true },
+  // Extensão (não existem no datapath da aula)
+  { mnemonic: 'bne', format: 'I', opcode: 0b000101, syntax: 'rs,rt,offset', base: false },
+  { mnemonic: 'slti', format: 'I', opcode: 0b001010, syntax: 'rt,rs,imm', base: false },
+  { mnemonic: 'jal', format: 'J', opcode: 0b000011, syntax: 'target', base: false },
+  { mnemonic: 'jr', format: 'R', opcode: 0b000000, funct: 0b001000, syntax: 'rs', base: false },
 ];
 
 const BY_MNEMONIC = new Map(INSTRUCTIONS.map((s) => [s.mnemonic, s]));

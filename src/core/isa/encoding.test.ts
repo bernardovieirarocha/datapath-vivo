@@ -61,7 +61,7 @@ describe('encode/decode: ida e volta', () => {
   });
 });
 
-describe('programa padrão da Prática 10 (Seção 2.8)', () => {
+describe('programa de exemplo (o do golden trace)', () => {
   const expected: [Instruction, number][] = [
     [{ mnemonic: 'beq', rs: 8, rt: 9, imm: 1 }, 0x11090001],
     [{ mnemonic: 'addi', rt: 8, rs: 8, imm: 2 }, 0x21080002],
@@ -81,7 +81,7 @@ describe('programa padrão da Prática 10 (Seção 2.8)', () => {
 });
 
 describe('decode', () => {
-  it('fatia os campos como o processador.v', () => {
+  it('fatia os campos dos formatos R, I e J', () => {
     expect(fields(0x020a4022)).toEqual({
       opcode: 0,
       rs: 16,
@@ -98,16 +98,16 @@ describe('decode', () => {
     expect(d.ok).toBe(false);
     if (!d.ok) expect(d.reason).toBe('opcode desconhecido: 111111');
   });
-  it('funct desconhecido (ex.: 0x00000000 = sll, que o lab não tem)', () => {
+  it('funct desconhecido (ex.: 0x00000000 = sll, fora do subconjunto da aula)', () => {
     const d = decode(0);
     expect(d.ok).toBe(false);
     if (!d.ok) expect(d.reason).toBe('funct desconhecido: 000000');
   });
-  it('marca as instruções de extensão como hardware: false', () => {
+  it('marca as instruções de extensão como base: false', () => {
     const d = decode(encode({ mnemonic: 'bne', rs: 1, rt: 2, imm: -3 }));
-    expect(d.ok && d.spec.hardware).toBe(false);
+    expect(d.ok && d.spec.base).toBe(false);
   });
-  it('avisa campos que o hardware ignora', () => {
+  it('avisa campos que o datapath ignora', () => {
     const add = decode(0x020a4022 | (3 << 6));
     expect(add.ok && add.ignored).toEqual(['shamt']);
     const jr = decode(encode({ mnemonic: 'jr', rs: 31 }) | (1 << 16) | (2 << 11) | (3 << 6));

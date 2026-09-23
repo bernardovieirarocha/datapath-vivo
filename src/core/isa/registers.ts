@@ -26,7 +26,7 @@ export function parseRegister(text: string): number | undefined {
 
 export type RegisterStyle = 'numero' | 'nome';
 
-/** Formata o registrador: `$8` (estilo do lab, padrão) ou `$t0`. */
+/** Formata o registrador: `$8` (estilo dos slides, padrão) ou `$t0`. */
 export function formatRegister(n: number, style: RegisterStyle = 'numero'): string {
   return style === 'nome' ? `$${REGISTER_NAMES[n]}` : `$${n}`;
 }

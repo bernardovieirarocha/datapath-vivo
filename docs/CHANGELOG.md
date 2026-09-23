@@ -85,3 +85,32 @@
 
 **Pendente**
 - Nada do aceite da fase. Textos dos alertas em pt-BR: Fase 3 (`src/content`). Latch de bypass do `BancoReg.v` na simulação Verilog: `DUVIDAS.md` item 7, para a Fase 10.
+
+## Reorientação para a teoria (plano v2) — set/2026
+
+A ferramenta passa a ser **apoio à disciplina teórica AOC1**. A fonte da verdade deixa de ser o Verilog da Prática 10 e passa a ser os slides das Aulas 04/06/07 (e o P&H cap. 4).
+
+**Achados nos slides que mudaram o plano**
+- O controle da ULA do slide tem **3 bits** (Aula 06, p. 27), igual ao do lab. A "diferença 3 × 4 bits" da v1 estava errada (4 bits é o do livro, por causa do NOR).
+- No slide, `j 96` usa o **valor do campo** (p. 41). O montador trocou a convenção do MARS (endereço em bytes) pela do slide.
+- O subconjunto da aula é add/sub/and/or/slt/lw/sw/beq + j (p. 11 e 48). addi não aparece, mas por decisão do projeto entra nas tabelas e no quiz como as demais (`DUVIDAS.md` item 4).
+- A tabela de controle do slide tem X nos don't cares (p. 34). O simulador usa 0 por baixo, e `DONT_CARES` diz quais são X.
+
+**Removido**
+- M7 (placa DE10-Lite) e as Fases 5 e 10 (placa e verificação cruzada com o Verilog), com os prompts. `src/core/board` e `src/ui/board`.
+- Import/export do bloco `memory[i] = 32'h…;` (`src/core/isa/verilog.ts` e testes).
+- Da netlist: reset, portas `RegWrite & ~reset`/`MemWrite & ~reset` e o fio `overflow`. O overflow continua nos sinais internos da ULA, para o painel.
+- Esquisitices do hardware do lab: memória de dados de 64 bytes endereçada por `address[7:2]` (dando a volta em 256), memória de instruções de 32 palavras dando a volta em 128, e os alertas correspondentes.
+
+**Mudado**
+- Memórias simuladas: instruções com 64 palavras, dados com 256 bytes (little-endian), ambas a partir de 0. Alertas: `dmem-fora-da-memoria`, `dmem-desalinhado`, `pc-fora-da-imem` (lê 0x00000000), `opcode-desconhecido`, `funct-desconhecido`.
+- `InstructionSpec.hardware` virou `base` (instrução do datapath da aula). `PRATICA10_*` virou `EXEMPLO_*`. As mensagens do montador falam do "datapath da aula".
+- CLAUDE.md (regras 1, 6 e 7 e o resumo), PLANO.md (v2: Seção 2 reescrita a partir dos slides, com a página de cada tabela; matriz sem M7; testes e fases), DUVIDAS.md (saíram as dúvidas só do lab; entraram a linha do `j`, o addi e o endereço inicial 0 × 0x00400000), README.
+
+**Mantido**
+- Golden trace como teste de regressão obrigatório: o programa de exemplo dá o mesmo resultado no datapath da aula, **22/22 ciclos verdes** depois da mudança.
+- Netlist, avaliador genérico, atividade, ULA (slt com overflow), controles e testes de propriedade.
+- `reference/pratica10/` e `tools/golden/` ficam só como registro de onde veio o golden trace.
+
+**Pendente**
+- Confirmar com a professora os itens 3–5 do `DUVIDAS.md`.

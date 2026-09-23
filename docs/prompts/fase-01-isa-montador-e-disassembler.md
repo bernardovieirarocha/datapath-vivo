@@ -11,3 +11,5 @@ Ao terminar: rode lint, testes e build; atualize docs/CHANGELOG.md com o que fic
 ## Critério de aceite
 
 ida e volta para todas as instruções; programa padrão bate; import/export do Verilog com teste.
+
+> **Nota (v2):** fase concluída. Na reorientação para a teoria, o import/export do Verilog saiu e o `j` numérico passou a ser o valor do campo (como no slide `j 96`).

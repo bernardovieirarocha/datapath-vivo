@@ -28,10 +28,8 @@ export interface OutputSpec {
 export interface ComponentSpec<Kind extends string = string> {
   id: string;
   kind: Kind;
-  /** Nome como no slide/Verilog. */
+  /** Nome como no slide. */
   label: string;
-  /** Módulo/instância correspondente no Verilog da Prática 10. */
-  verilog?: string;
   inputs: readonly string[];
   /** Entradas amostradas só na borda de subida (não entram na ordem de avaliação). */
   edgeInputs?: readonly string[];

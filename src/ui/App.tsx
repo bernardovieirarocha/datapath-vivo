@@ -5,7 +5,7 @@ export function App() {
     <main className="home">
       <header>
         <h1>Datapath Vivo</h1>
-        <p className="subtitulo">Caminho de dados MIPS da Prática 10 — AOC1 / LAOC1, CEFET-MG</p>
+        <p className="subtitulo">Caminho de dados MIPS, como nas aulas de AOC1 — CEFET-MG</p>
       </header>
       <nav aria-label="Módulos">
         <ul className="modulos">

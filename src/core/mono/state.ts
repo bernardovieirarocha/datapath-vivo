@@ -8,9 +8,9 @@ export interface MonoState {
   pc: number;
   /** 32 registradores, uint32. `regs[0]` é sempre 0. */
   regs: readonly number[];
-  /** 64 bytes. */
+  /** `DMEM_BYTES` bytes. */
   dmem: readonly number[];
-  /** 32 palavras. */
+  /** `IMEM_WORDS` palavras. */
   imem: readonly number[];
 }
 
@@ -51,8 +51,11 @@ export function createState(init: InitialState = {}): MonoState {
   return { cycle: 0, pc: u32(init.pc ?? 0), regs, dmem, imem };
 }
 
-/** Programa padrão da Prática 10 (`MemoriaInstrucao.v`, Seção 2.8). */
-export const PRATICA10_PROGRAM: readonly number[] = [
+/**
+ * Programa de exemplo (o mesmo do golden trace, `reference/golden_trace_pratica10.json`):
+ * usa beq, addi, sw, lw, sub e j num laço de período 11.
+ */
+export const EXEMPLO_PROGRAM: readonly number[] = [
   0x11090001, // beq $8, $9, 1
   0x21080002, // addi $8, $8, 2
   0xad880000, // sw $8, 0($12)
@@ -61,9 +64,9 @@ export const PRATICA10_PROGRAM: readonly number[] = [
   0x08000000, // j 0
 ];
 
-/** Valores iniciais de `BancoReg.v` e `MemoriaDados.v`. */
-export const PRATICA10_INITIAL: InitialState = {
-  program: PRATICA10_PROGRAM,
+/** Estado inicial do exemplo: $8 = 5, $9 = 5, $10 = 1, $12 = 4; M[0] = 5, M[8] = 7. */
+export const EXEMPLO_INITIAL: InitialState = {
+  program: EXEMPLO_PROGRAM,
   regs: { 8: 5, 9: 5, 10: 1, 12: 4 },
   dmemBytes: { 0: 5, 8: 7 },
 };

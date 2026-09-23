@@ -79,8 +79,8 @@ const BY_OPCODE = new Map(INSTRUCTIONS.filter((s) => s.format !== 'R').map((s) =
 
 /**
  * Decodifica 32 bits. Reconhece as 14 instruções da tabela (inclusive as de extensão;
- * consulte `spec.hardware`). `ignored` lista campos não nulos que a instrução não usa
- * (ex.: shamt ≠ 0 num add) — o hardware do lab os ignora.
+ * consulte `spec.base`). `ignored` lista campos não nulos que a instrução não usa
+ * (ex.: shamt ≠ 0 num add) — o datapath os ignora.
  */
 export function decode(word: number): DecodeResult {
   const f = fields(word);

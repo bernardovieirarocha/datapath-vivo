@@ -3,18 +3,14 @@ import { decode } from './encoding';
 import { formatRegister, type RegisterStyle } from './registers';
 
 export interface DisassembleOptions {
-  /** `$8` (padrão, como no lab) ou `$t0`. */
+  /** `$8` (padrão, como nos slides) ou `$t0`. */
   registers?: RegisterStyle;
-  /**
-   * Endereço da instrução. Se dado, o destino do `j`/`jal` inclui PC+4[31:28]
-   * (senão, supõe os 4 bits de cima em 0 — o caso de todo programa da Prática 10).
-   */
-  pc?: number;
 }
 
 /**
  * Converte 32 bits em Assembly, no mesmo formato aceito pelo montador:
- * `beq $8, $9, 1`, `sw $8, 0($12)`, `j 0`. A palavra 0x00000000 vira `nop`.
+ * `beq $8, $9, 1`, `sw $8, 0($12)`, `j 96` (valor do campo, como no slide).
+ * A palavra 0x00000000 vira `nop`.
  * Instruções desconhecidas viram um comentário explicando o motivo.
  */
 export function disassemble(word: number, opts: DisassembleOptions = {}): string {
@@ -45,11 +41,11 @@ export function disassemble(word: number, opts: DisassembleOptions = {}): string
       return `${i.mnemonic} ${r(i.rs)}, ${r(i.rt)}, ${i.imm}`;
     case 'j':
     case 'jal':
-      return `${i.mnemonic} ${jumpAddress(i.target, opts.pc ?? 0)}`;
+      return `${i.mnemonic} ${i.target}`;
   }
 }
 
-/** Endereço de salto `{PC+4[31:28], target, 00}` (Seção 2.1). */
+/** Endereço de salto `{PC+4[31:28], target, 00}` (Aula 06, inclusão do jump). */
 export function jumpAddress(target: number, pc: number): number {
   return u32((u32(pc + 4) & 0xf0000000) | ((target & 0x3ffffff) << 2));
 }

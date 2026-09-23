@@ -5,7 +5,7 @@ import { validateNetlist } from '../netlist';
 import { computeActivity } from './activity';
 import { dmemWord } from './components';
 import { MONO_NETLIST } from './datapath';
-import { createState, PRATICA10_INITIAL, type InitialState, type MonoState } from './state';
+import { createState, EXEMPLO_INITIAL, type InitialState, type MonoState } from './state';
 import { evaluate, run, step } from './step';
 
 function prog(src: string, init: Omit<InitialState, 'program'> = {}): MonoState {
@@ -20,7 +20,7 @@ describe('netlist monociclo', () => {
   });
 
   it('snapshot tem valor para todo fio da netlist, na largura do fio', () => {
-    const { wires } = evaluate(createState(PRATICA10_INITIAL));
+    const { wires } = evaluate(createState(EXEMPLO_INITIAL));
     for (const w of MONO_NETLIST.wires) {
       const v = wires[w.id];
       expect(v, w.id).toBeDefined();
@@ -32,7 +32,7 @@ describe('netlist monociclo', () => {
 
 describe('step', () => {
   it('é puro: não altera o estado de entrada', () => {
-    const s = createState(PRATICA10_INITIAL);
+    const s = createState(EXEMPLO_INITIAL);
     const copy = structuredClone(s);
     run(s, 12);
     expect(s).toEqual(copy);
@@ -71,8 +71,8 @@ describe('step', () => {
   it('createState ignora valor inicial para $0 e valida entradas', () => {
     expect(createState({ regs: { 0: 9 } }).regs[0]).toBe(0);
     expect(() => createState({ regs: { 32: 1 } })).toThrow(RangeError);
-    expect(() => createState({ dmemBytes: { 64: 1 } })).toThrow(RangeError);
-    expect(() => createState({ program: new Array(33).fill(0) })).toThrow(RangeError);
+    expect(() => createState({ dmemBytes: { 256: 1 } })).toThrow(RangeError);
+    expect(() => createState({ program: new Array(65).fill(0) })).toThrow(RangeError);
     expect(createState({ dmemBytes: { 3: 0x1ff } }).dmem[3]).toBe(0xff);
   });
 
@@ -86,8 +86,8 @@ describe('step', () => {
   });
 
   it('jump tem prioridade sobre o desvio', () => {
-    // Não dá para ter Branch e Jump juntos com o controle do lab; o mux em cascata garante:
-    const s = prog('j 12\nnop\nnop\nnop');
+    // Não dá para ter Branch e Jump juntos com esse controle; o mux em cascata garante:
+    const s = prog('j 3 # campo 3 = endereço 12\nnop\nnop\nnop');
     expect(step(s).next.pc).toBe(12);
   });
 
@@ -100,46 +100,14 @@ describe('step', () => {
   it('overflow é calculado e não usado (sem exceção)', () => {
     const s = prog('add $3, $1, $2', { regs: { 1: 0x7fffffff, 2: 1 } });
     const r = step(s);
-    expect(r.snapshot.wires['overflow']).toBe(1);
+    expect(r.snapshot.internals.alu.overflow).toBe(1);
     expect(toSigned(r.next.regs[3]!)).toBe(-(2 ** 31));
     expect(r.snapshot.alerts).toEqual([]);
-    expect(r.snapshot.internals.alu.ovAddSub).toBe(1);
   });
 
   it('decodifica a instrução do ciclo', () => {
-    const d = step(createState(PRATICA10_INITIAL)).snapshot.decoded;
+    const d = step(createState(EXEMPLO_INITIAL)).snapshot.decoded;
     expect(d.ok && d.instr).toEqual({ mnemonic: 'beq', rs: 8, rt: 9, imm: 1 });
-  });
-});
-
-describe('reset', () => {
-  it('PC vai a 0 no mesmo ciclo (assíncrono) e escritas ficam desabilitadas', () => {
-    let s = prog('nop\naddi $1, $0, 1\nsw $1, 0($0)', {});
-    s = { ...s, pc: 4 };
-    const r = step(s, { reset: true });
-    expect(r.snapshot.reset).toBe(true);
-    expect(r.snapshot.wires['reset']).toBe(1);
-    expect(r.snapshot.wires['pc']).toBe(0);
-    expect(r.next.pc).toBe(0);
-
-    // mesmo com RegWrite = 1 na instrução, a escrita não acontece
-    const s2 = { ...prog('addi $1, $0, 1'), pc: 0 };
-    const r2 = step(s2, { reset: true });
-    expect(r2.snapshot.wires['RegWrite']).toBe(1);
-    expect(r2.snapshot.wires['reg_write_enable']).toBe(0);
-    expect(r2.next.regs[1]).toBe(0);
-
-    const s3 = prog('sw $1, 0($0)', { regs: { 1: 9 } });
-    const r3 = step(s3, { reset: true });
-    expect(r3.snapshot.wires['mem_write_enable']).toBe(0);
-    expect(r3.next.dmem[0]).toBe(0);
-  });
-
-  it('não mexe em registradores e memória (só o PC)', () => {
-    const s = { ...createState(PRATICA10_INITIAL), pc: 16 };
-    const r = step(s, { reset: true });
-    expect(r.next.regs).toBe(s.regs);
-    expect(r.next.dmem).toBe(s.dmem);
   });
 });
 
@@ -163,25 +131,26 @@ describe('alertas', () => {
     expect(r.snapshot.writes.reg).toBeUndefined();
   });
 
-  it('acesso à memória de dados ≥ 64', () => {
-    const r = step(prog('lw $1, 64($0)'));
+  it('lw/sw fora da memória de dados simulada (256 bytes)', () => {
+    const r = step(prog('lw $1, 256($0)', { regs: { 1: 7 } }));
     expect(r.snapshot.alerts.map((a) => a.code)).toEqual(['dmem-fora-da-memoria']);
     expect(r.next.regs[1]).toBe(0);
-    const w = step(prog('sw $1, 60($2)', { regs: { 1: 5, 2: 4 } }));
+    const w = step(prog('sw $1, 252($2)', { regs: { 1: 5, 2: 4 } }));
     expect(w.snapshot.alerts.map((a) => a.code)).toEqual(['dmem-fora-da-memoria']);
-    expect(w.snapshot.writes.mem?.bytes).toEqual([]);
+    expect(w.snapshot.writes.mem).toBeUndefined();
+    expect(w.next.dmem).toBe(w.next.dmem);
+    // última palavra válida: 252..255
+    const ok = step(prog('sw $1, 252($0)', { regs: { 1: 5 } }));
+    expect(ok.snapshot.alerts).toEqual([]);
+    expect(dmemWord(ok.next.dmem, 252)).toBe(5);
   });
 
-  it('endereço ≥ 256 dá a volta (só address[7:2])', () => {
-    const r = step(prog('lw $1, 256($0)', { dmemBytes: { 0: 9 } }));
-    expect(r.snapshot.alerts.map((a) => a.code)).toEqual(['dmem-endereco-alto']);
-    expect(r.next.regs[1]).toBe(9);
-  });
-
-  it('endereço desalinhado: 2 bits de baixo ignorados', () => {
+  it('endereço desalinhado: o simulador alinha e avisa', () => {
     const r = step(prog('lw $1, 2($0)', { dmemBytes: { 0: 9 } }));
     expect(r.snapshot.alerts.map((a) => a.code)).toEqual(['dmem-desalinhado']);
     expect(r.next.regs[1]).toBe(9);
+    const w = step(prog('sw $1, 5($0)', { regs: { 1: 3 } }));
+    expect(w.snapshot.writes.mem?.address).toBe(4);
   });
 
   it('sem acesso à memória, endereço "estranho" na ULA não gera alerta', () => {
@@ -189,11 +158,11 @@ describe('alertas', () => {
     expect(r.snapshot.alerts).toEqual([]);
   });
 
-  it('PC além da memória de instruções dá a volta', () => {
-    const s = { ...createState({ program: [0x21080002] }), pc: 128 };
+  it('PC fora da memória de instruções lê 0x00000000', () => {
+    const s = { ...createState({ program: [0x21080002] }), pc: 256 };
     const r = step(s);
-    expect(r.snapshot.alerts.map((a) => a.code)).toEqual(['pc-alem-da-imem']);
-    expect(r.snapshot.wires['instr']).toBe(0x21080002);
+    expect(r.snapshot.alerts.map((a) => a.code)).toEqual(['pc-fora-da-imem', 'funct-desconhecido']);
+    expect(r.snapshot.wires['instr']).toBe(0);
   });
 });
 
@@ -225,14 +194,7 @@ describe('atividade (fios acesos)', () => {
     ]) {
       expect(a.wires.has(id), id).toBe(true);
     }
-    for (const id of [
-      'imm_ext',
-      'mem_read_data',
-      'branch_target',
-      'jump_target',
-      'MemRead',
-      'overflow',
-    ]) {
+    for (const id of ['imm_ext', 'mem_read_data', 'branch_target', 'jump_target', 'MemRead']) {
       expect(a.wires.has(id), id).toBe(false);
     }
     expect(a.components.has('dmem')).toBe(false);
@@ -254,7 +216,7 @@ describe('atividade (fios acesos)', () => {
 
   it('sw: memória escrita, sem write-back', () => {
     const a = activeAfter('sw $1, 0($2)');
-    for (const id of ['rd2', 'alu_result', 'MemWrite', 'mem_write_enable', 'imm_ext']) {
+    for (const id of ['rd2', 'alu_result', 'MemWrite', 'imm_ext']) {
       expect(a.wires.has(id), id).toBe(true);
     }
     for (const id of ['write_data', 'write_reg', 'mem_read_data']) {
@@ -284,17 +246,11 @@ describe('atividade (fios acesos)', () => {
     }
     expect(a.components.has('alu')).toBe(false);
   });
-
-  it('reset: só o reset alimenta o PC', () => {
-    const a = computeActivity(step(createState(PRATICA10_INITIAL), { reset: true }).snapshot);
-    expect(a.wires.has('reset')).toBe(true);
-    expect(a.wires.has('next_pc')).toBe(false);
-  });
 });
 
 describe('run', () => {
   it('devolve estados (com o inicial) e snapshots', () => {
-    const { states, snapshots } = run(createState(PRATICA10_INITIAL), 5);
+    const { states, snapshots } = run(createState(EXEMPLO_INITIAL), 5);
     expect(states).toHaveLength(6);
     expect(snapshots).toHaveLength(5);
     expect(states.map((s) => s.pc)).toEqual([0, 8, 12, 16, 20, 0]);

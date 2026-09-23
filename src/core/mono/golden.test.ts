@@ -1,12 +1,12 @@
 /**
- * Teste de regressão nº 1 (regra 2 do CLAUDE.md): o golden trace da Prática 10
- * nunca quebra. 22 ciclos, todos os fios, campo a campo.
+ * Teste de regressão nº 1 (regra 2 do CLAUDE.md): o golden trace nunca quebra.
+ * 22 ciclos do programa de exemplo, todos os fios, campo a campo.
  */
 import { describe, expect, it } from 'vitest';
 import golden from '../../../reference/golden_trace_pratica10.json';
 import { bin, hex, toSigned } from '../bits';
 import { disassemble } from '../isa';
-import { createState, PRATICA10_INITIAL, PRATICA10_PROGRAM } from './state';
+import { createState, EXEMPLO_INITIAL, EXEMPLO_PROGRAM } from './state';
 import { run } from './step';
 import { dmemWord } from './components';
 
@@ -44,21 +44,21 @@ const CONTROL_1BIT = [
   'Jump',
 ] as const;
 
-describe('golden trace da Prática 10', () => {
+describe('golden trace do programa de exemplo', () => {
   it('estado inicial e programa batem com o arquivo', () => {
     const init = golden.initial_state;
-    expect(PRATICA10_PROGRAM).toEqual(golden.program.map((p) => Number(p.hex)));
-    expect(PRATICA10_INITIAL.regs).toEqual(
+    expect(EXEMPLO_PROGRAM).toEqual(golden.program.map((p) => Number(p.hex)));
+    expect(EXEMPLO_INITIAL.regs).toEqual(
       Object.fromEntries(Object.entries(init.regs).map(([k, v]) => [Number(k), v])),
     );
-    expect(PRATICA10_INITIAL.dmemBytes).toEqual(
+    expect(EXEMPLO_INITIAL.dmemBytes).toEqual(
       Object.fromEntries(Object.entries(init.dmem_bytes).map(([k, v]) => [Number(k), v])),
     );
-    expect(createState(PRATICA10_INITIAL).pc).toBe(init.pc);
+    expect(createState(EXEMPLO_INITIAL).pc).toBe(init.pc);
     expect(golden.trace).toHaveLength(22);
   });
 
-  const { states, snapshots } = run(createState(PRATICA10_INITIAL), golden.trace.length);
+  const { states, snapshots } = run(createState(EXEMPLO_INITIAL), golden.trace.length);
 
   describe.each(golden.trace.map((g, i) => [g.cycle, g.asm, g, i] as const))(
     'ciclo %i (%s)',
@@ -70,7 +70,7 @@ describe('golden trace da Prática 10', () => {
       it('instrução', () => {
         expect(snap.cycle).toBe(g.cycle);
         expect(hex(w['instr']!)).toBe(g.instr.toUpperCase().replace('0X', '0x'));
-        expect(disassemble(w['instr']!, { pc: w['pc']! })).toBe(g.asm);
+        expect(disassemble(w['instr']!)).toBe(g.asm);
       });
 
       it('sinais de controle', () => {
@@ -97,7 +97,7 @@ describe('golden trace da Prática 10', () => {
         expect(toSigned(dmemWord(after.dmem, 4))).toBe(g.after.mem_word_4);
       });
 
-      it('nenhum alerta no programa padrão', () => {
+      it('nenhum alerta no programa de exemplo', () => {
         expect(snap.alerts).toEqual([]);
       });
     },

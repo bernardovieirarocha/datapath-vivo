@@ -4,13 +4,28 @@ import { toSigned, u32 } from '../../bits';
 import { add32, jumpConcat, mux2, shiftLeft2 } from './basic';
 import { alu, ALU_OP } from './alu';
 import { aluControl } from './aluControl';
-import { control, CONTROL_SIGNAL_NAMES, KNOWN_OPCODES, type ControlSignals } from './control';
-import { dmemRead, dmemWord, dmemWrite, imemRead } from './memories';
+import {
+  control,
+  CONTROL_SIGNAL_NAMES,
+  DONT_CARES,
+  KNOWN_OPCODES,
+  type ControlSignals,
+} from './control';
+import {
+  DMEM_BYTES,
+  dmemRead,
+  dmemWord,
+  dmemWrite,
+  IMEM_WORDS,
+  imemRead,
+  inDmem,
+  wordAddress,
+} from './memories';
 
 const INT_MIN = 0x80000000;
 const INT_MAX = 0x7fffffff;
 
-describe('ULA (ula.v)', () => {
+describe('ULA', () => {
   it('add, sub, and, or, slt', () => {
     expect(alu(5, 3, ALU_OP.add).result).toBe(8);
     expect(toSigned(alu(4, 5, ALU_OP.sub).result)).toBe(-1);
@@ -58,7 +73,7 @@ describe('ULA (ula.v)', () => {
     expect(alu(5, 3, ALU_OP.add).internals.bMux).toBe(3);
   });
 
-  it('códigos fora da tabela (011, 100, 101) dão 0, como o resMux.v', () => {
+  it('códigos fora da tabela (011, 100, 101) dão 0', () => {
     for (const op of [0b011, 0b100, 0b101]) {
       const r = alu(123, 456, op);
       expect(r.result).toBe(0);
@@ -100,7 +115,7 @@ describe('ULA (ula.v)', () => {
   });
 });
 
-describe('Controle da ULA (aluControl.v) — tabela 2.4', () => {
+describe('Controle da ULA (Aula 06, p. 27–30)', () => {
   it.each([
     [0b00, 0b000000, 0b010],
     [0b00, 0b100010, 0b010], // funct ignorado
@@ -124,7 +139,7 @@ describe('Controle da ULA (aluControl.v) — tabela 2.4', () => {
     expect(aluControl(0b11, 0b100000)).toBe(0b000);
   });
 
-  it('ponte com o livro: os 3 bits do lab = 3 bits de baixo do código de 4 bits do P&H', () => {
+  it('os 3 bits do slide = 3 bits de baixo do código de 4 bits do livro (sem o Ainvert do NOR)', () => {
     const PH: Record<string, number> = {
       and: 0b0000,
       or: 0b0001,
@@ -136,7 +151,7 @@ describe('Controle da ULA (aluControl.v) — tabela 2.4', () => {
   });
 });
 
-describe('Controle principal (controle_principal.v) — tabela 2.3', () => {
+describe('Controle principal (Aula 06, p. 34 + addi e j)', () => {
   const row = (s: string): ControlSignals => {
     const [RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump, ALUOp] =
       s.split(' ');
@@ -173,6 +188,16 @@ describe('Controle principal (controle_principal.v) — tabela 2.3', () => {
     expect(KNOWN_OPCODES.size).toBe(6);
   });
 
+  it("don't cares do slide: sw e beq têm X em RegDst e MemtoReg; R, lw e addi não têm X", () => {
+    expect(DONT_CARES[0b101011]).toEqual(['RegDst', 'MemtoReg']);
+    expect(DONT_CARES[0b000100]).toEqual(['RegDst', 'MemtoReg']);
+    for (const op of [0b000000, 0b100011, 0b001000]) expect(DONT_CARES[op]).toEqual([]);
+    // O valor usado pelo simulador num X é sempre 0
+    for (const [op, xs] of Object.entries(DONT_CARES)) {
+      for (const sig of xs) expect(control(Number(op))[sig]).toBe(0);
+    }
+  });
+
   it('lista os 9 sinais com o vocabulário da aula', () => {
     expect([...CONTROL_SIGNAL_NAMES].sort()).toEqual(Object.keys(control(0)).sort());
   });
@@ -200,36 +225,40 @@ describe('blocos simples', () => {
 });
 
 describe('memórias', () => {
-  it('memória de instruções usa PC[6:2] (dá a volta a cada 128 bytes)', () => {
-    const imem = Array.from({ length: 32 }, (_, i) => i + 100);
+  it('memória de instruções: PC/4 é o índice da palavra; fora dela lê 0', () => {
+    const imem = Array.from({ length: IMEM_WORDS }, (_, i) => i + 100);
     expect(imemRead(imem, 0)).toBe(100);
     expect(imemRead(imem, 20)).toBe(105);
-    expect(imemRead(imem, 124)).toBe(131);
-    expect(imemRead(imem, 128)).toBe(100);
-    expect(imemRead(imem, 0x400004)).toBe(101);
+    expect(imemRead(imem, (IMEM_WORDS - 1) * 4)).toBe(100 + IMEM_WORDS - 1);
+    expect(imemRead(imem, IMEM_WORDS * 4)).toBe(0);
+    expect(imemRead(imem, 0x00400000)).toBe(0);
   });
 
-  it('memória de dados little-endian (byte 0 = LSB)', () => {
-    const bytes = dmemWrite(new Array(64).fill(0), 8, 0x11223344);
+  it('memória de dados little-endian (byte do menor endereço = LSB)', () => {
+    const bytes = dmemWrite(new Array(DMEM_BYTES).fill(0), 8, 0x11223344);
     expect(bytes.slice(8, 12)).toEqual([0x44, 0x33, 0x22, 0x11]);
     expect(dmemWord(bytes, 8)).toBe(0x11223344);
   });
 
   it('leitura com MemRead = 0 dá 0', () => {
-    const bytes = dmemWrite(new Array(64).fill(0), 0, 0xdeadbeef);
+    const bytes = dmemWrite(new Array(DMEM_BYTES).fill(0), 0, 0xdeadbeef);
     expect(dmemRead(bytes, 0, 0)).toBe(0);
     expect(dmemRead(bytes, 0, 1)).toBe(0xdeadbeef);
   });
 
-  it('só address[7:2] conta: 2 bits de baixo ignorados, endereço 256 volta ao 0', () => {
-    const bytes = dmemWrite(new Array(64).fill(0), 0, 42);
-    expect(dmemRead(bytes, 3, 1)).toBe(42);
-    expect(dmemRead(bytes, 256, 1)).toBe(42);
+  it('os 2 bits de baixo do endereço são ignorados', () => {
+    const bytes = dmemWrite(new Array(DMEM_BYTES).fill(0), 3, 42);
+    expect(wordAddress(3)).toBe(0);
+    expect(dmemRead(bytes, 0, 1)).toBe(42);
+    expect(dmemRead(bytes, 2, 1)).toBe(42);
   });
 
-  it('fora dos 64 bytes: leitura 0 e escrita descartada', () => {
-    const bytes = new Array(64).fill(7);
-    expect(dmemRead(bytes, 64, 1)).toBe(0);
-    expect(dmemWrite(bytes, 64, 0xffffffff)).toEqual(bytes);
+  it('fora da memória simulada: leitura 0 e escrita sem efeito', () => {
+    const bytes = new Array(DMEM_BYTES).fill(7);
+    expect(inDmem(DMEM_BYTES - 4)).toBe(true);
+    expect(inDmem(DMEM_BYTES)).toBe(false);
+    expect(inDmem(0xfffffffc)).toBe(false);
+    expect(dmemRead(bytes, DMEM_BYTES, 1)).toBe(0);
+    expect(dmemWrite(bytes, DMEM_BYTES, 0xffffffff)).toEqual(bytes);
   });
 });

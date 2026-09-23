@@ -1,4 +1,4 @@
-/** Sinais da unidade de controle principal (`controle_principal.v`). */
+/** Sinais da unidade de controle principal (Aula 06, p. 31–34). */
 export interface ControlSignals {
   RegDst: 0 | 1;
   Branch: 0 | 1;
@@ -36,13 +36,14 @@ const NOP: ControlSignals = {
   Jump: 0,
 };
 
-/** Opcodes reconhecidos pelo `controle_principal.v`. */
+/** Opcodes reconhecidos pelo controle principal. */
 export const KNOWN_OPCODES: ReadonlySet<number> = new Set([
   0b000000, 0b001000, 0b100011, 0b101011, 0b000100, 0b000010,
 ]);
 
 /**
- * Tabela da Seção 2.3. Os "don't care" do slide saem 0 (valor padrão do Verilog).
+ * Tabela do controle principal. Onde o slide tem X (don't care), o simulador
+ * precisa de um valor concreto e usa 0; `DONT_CARES` diz quais são X.
  * Opcode desconhecido → tudo 0.
  */
 export function control(opcode: number): ControlSignals {
@@ -63,3 +64,16 @@ export function control(opcode: number): ControlSignals {
       return { ...NOP };
   }
 }
+
+/**
+ * Sinais que são X (don't care) na tabela do slide (Aula 06, p. 34), por opcode.
+ * addi não tem X. Para o j, a tabela segue o P&H (ver docs/DUVIDAS.md).
+ */
+export const DONT_CARES: Readonly<Record<number, readonly (keyof ControlSignals)[]>> = {
+  0b000000: [],
+  0b001000: [],
+  0b100011: [],
+  0b101011: ['RegDst', 'MemtoReg'],
+  0b000100: ['RegDst', 'MemtoReg'],
+  0b000010: ['RegDst', 'ALUSrc', 'MemtoReg'],
+};

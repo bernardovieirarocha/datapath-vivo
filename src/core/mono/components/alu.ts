@@ -1,7 +1,7 @@
 import { bit, u32 } from '../../bits';
 import { add32 } from './basic';
 
-/** Códigos de operação da ULA do lab (`resMux.v`, 3 bits). */
+/** Linhas de controle da ULA (Aula 06, p. 27): 3 bits. */
 export const ALU_OP = {
   and: 0b000,
   or: 0b001,
@@ -15,7 +15,7 @@ export interface AluResult {
   zero: 0 | 1;
   /** Calculado, mas não usado pelo processador (não há exceção). */
   overflow: 0 | 1;
-  /** Sinais internos de `ula.v`, para o painel do componente. */
+  /** Sinais internos da ULA, para o painel do componente. */
   internals: {
     /** `muxB`: b ou ~b, conforme op[2] (Bnegate). */
     bMux: number;
@@ -32,8 +32,9 @@ export interface AluResult {
 }
 
 /**
- * `ula.v`, bit a bit. Códigos fora da tabela (011, 100, 101) dão resultado 0,
- * como no `resMux.v` (nenhuma linha do OR-de-ANDs é selecionada).
+ * ULA de 32 bits: a subtração é `a + ~b + 1` (Bnegate = bit 2 do controle), e o
+ * slt usa `sinal(a − b) XOR overflow`, que acerta também com sinais opostos.
+ * Códigos fora da tabela (011, 100, 101) dão resultado 0.
  */
 export function alu(a: number, b: number, op: number): AluResult {
   a = u32(a);

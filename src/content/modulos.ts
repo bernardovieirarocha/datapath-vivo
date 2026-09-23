@@ -1,4 +1,7 @@
-/** Módulos da ferramenta (docs/PLANO.md, Seção 5). `fase` = em qual fase do roadmap ele fica pronto. */
+/**
+ * Módulos da ferramenta (docs/PLANO.md, Seção 5). `fase` = em qual fase do roadmap ele fica pronto.
+ * Não há M7: a placa DE10-Lite saiu do escopo (a ferramenta é apoio à teoria).
+ */
 export interface Modulo {
   id: `M${number}`;
   titulo: string;
@@ -10,7 +13,7 @@ export const MODULOS: readonly Modulo[] = [
   {
     id: 'M1',
     titulo: 'Execução passo a passo',
-    resumo: 'O datapath da Prática 10 rodando, ciclo a ciclo.',
+    resumo: 'O datapath monociclo da aula rodando, ciclo a ciclo.',
     fase: 3,
   },
   {
@@ -34,15 +37,9 @@ export const MODULOS: readonly Modulo[] = [
   },
   { id: 'M6', titulo: 'Multiciclo', resumo: 'IR, MDR, A, B, ALUOut e a FSM de controle.', fase: 7 },
   {
-    id: 'M7',
-    titulo: 'Placa DE10-Lite',
-    resumo: 'LEDs e displays como na placa do laboratório.',
-    fase: 5,
-  },
-  {
     id: 'M8',
     titulo: 'Laboratório de Extensão',
-    resumo: 'Acrescente bne, slti, jal, jr ao hardware.',
+    resumo: 'Acrescente bne, slti, jal, jr ao datapath.',
     fase: 8,
   },
   {

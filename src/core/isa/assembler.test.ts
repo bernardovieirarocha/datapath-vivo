@@ -16,15 +16,15 @@ function errors(r: AssembleResult): string[] {
   return r.errors.map(formatAsmError);
 }
 
-describe('programa padrão da Prática 10', () => {
-  it('como está no MemoriaInstrucao.v (números): hex bate exatamente', () => {
+describe('programa de exemplo (o do golden trace)', () => {
+  it('com registradores por número: hex bate exatamente', () => {
     const src = golden.program.map((p) => p.asm).join('\n');
     expect(words(assemble(src))).toEqual(GOLDEN_WORDS);
   });
 
   it('com rótulos, nomes de registradores e comentários: mesmo hex', () => {
     const src = `
-      # Programa da Prática 10
+      # Programa de exemplo
       inicio: beq $t0, $t1, pula   # se $8 == $9, pula o addi
               addi $t0, $t0, 2
       pula:   sw   $t0, 0($t4)     # M[4] <- $8
@@ -42,14 +42,12 @@ describe('programa padrão da Prática 10', () => {
   });
 
   it('disassembler devolve o texto do golden trace', () => {
-    expect(GOLDEN_WORDS.map((w, i) => disassemble(w, { pc: i * 4 }))).toEqual(
-      golden.program.map((p) => p.asm),
-    );
+    expect(GOLDEN_WORDS.map((w) => disassemble(w))).toEqual(golden.program.map((p) => p.asm));
   });
 });
 
 describe('montador: sintaxe aceita', () => {
-  it('todas as instruções do hardware', () => {
+  it('todas as instruções do datapath da aula', () => {
     const src = [
       'add $1, $2, $3',
       'sub $1, $2, $3',
@@ -63,7 +61,7 @@ describe('montador: sintaxe aceita', () => {
       'j 4',
     ].join('\n');
     const w = words(assemble(src));
-    expect(w.map((x, i) => disassemble(x, { pc: i * 4 }))).toEqual(src.split('\n'));
+    expect(w.map((x) => disassemble(x))).toEqual(src.split('\n'));
   });
 
   it('imediatos em hex e binário, com sinal', () => {
@@ -90,10 +88,11 @@ describe('montador: sintaxe aceita', () => {
     expect(words(assemble(src)).map((w) => w & 0xffff)).toEqual([1, 0xfffe, 0xffff]);
   });
 
-  it('j com rótulo e com endereço numérico', () => {
-    const w = words(assemble('nop\nnop\nalvo: j alvo\nj 0x10'));
+  it('j com rótulo e com o valor do campo (como no slide: j 96)', () => {
+    const w = words(assemble('nop\nnop\nalvo: j alvo\nj 96\nj 0x3FFFFFF'));
     expect(w[2]).toBe(0x08000002);
-    expect(w[3]).toBe(0x08000004);
+    expect(w[3]).toBe(0x08000060);
+    expect(w[4]).toBe(0x0bffffff);
   });
 
   it('extensões só com a opção ligada', () => {
@@ -112,7 +111,7 @@ describe('montador: sintaxe aceita', () => {
 describe('montador: erros em português com a linha', () => {
   it.each([
     ['foo $1, $2, $3', /Linha 1: instrução desconhecida "foo"/],
-    ['bne $1, $2, 0', /Linha 1: bne não existe no processador da Prática 10/],
+    ['bne $1, $2, 0', /Linha 1: bne não faz parte do datapath da aula/],
     ['add $1, $2', /Linha 1: add espera 3 operandos; formato: add \$rd, \$rs, \$rt/],
     ['add $1, , $2', /add espera 3 operandos/],
     ['j', /j espera 1 operando;/],
@@ -127,9 +126,9 @@ describe('montador: erros em português com a linha', () => {
     ['beq $1, $2, 40000', /deslocamento 40000 não cabe/],
     ['beq $1, $2, 1x', /destino do desvio inválido/],
     ['j fim', /rótulo "fim" não foi definido/],
-    ['j 6', /não é múltiplo de 4/],
-    ['j -4', /endereço de salto inválido/],
-    ['j 0x10000000', /fora da região de 256 MB/],
+    ['j -4', /destino do salto inválido "-4"/],
+    ['j 0x4000000', /destino do salto inválido/],
+    ['j 1x', /destino do salto inválido/],
     ['.data', /diretivas como ".data" não são suportadas/],
     ['nop $1', /nop não tem operandos/],
   ])('%s', (src, msg) => {
@@ -155,12 +154,12 @@ describe('montador: erros em português com a linha', () => {
     expect(e.map((s) => s.split(':')[0])).toEqual(['Linha 1', 'Linha 3', 'Linha 4']);
   });
 
-  it('programa maior que a memória de instruções (32 palavras)', () => {
-    const src = Array.from({ length: 33 }, () => 'nop').join('\n');
+  it('programa maior que a memória de instruções (64 palavras)', () => {
+    const src = Array.from({ length: 65 }, () => 'nop').join('\n');
     expect(errors(assemble(src))).toEqual([
-      'Linha 33: o programa passa de 32 instruções — a memória de instruções da Prática 10 só tem 32 palavras',
+      'Linha 65: o programa passa de 64 instruções — a memória de instruções do simulador só tem 64 palavras',
     ]);
-    expect(words(assemble(src, { maxWords: 64 }))).toHaveLength(33);
+    expect(words(assemble(src, { maxWords: 100 }))).toHaveLength(65);
   });
 
   it('desvio longe demais', () => {
@@ -188,8 +187,7 @@ describe('disassembler', () => {
     // PC+4 = 0x00400010, addr = 1 → 0x00000004
     expect(jumpAddress(1, 0x0040000c)).toBe(0x00000004);
     expect(jumpAddress(1, 0x1000000c)).toBe(0x10000004);
-    expect(disassemble(0x08000001, { pc: 0x1000000c })).toBe(`j ${0x10000004}`);
-    expect(disassemble(0x08000001)).toBe('j 4');
+    expect(disassemble(0x08000060)).toBe('j 96');
   });
 });
 
