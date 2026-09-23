@@ -1,0 +1,696 @@
+/* ---------- base ---------- */
+.mono {
+  font-family: var(--font-mono);
+}
+.muted {
+  color: var(--text-muted);
+}
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  padding: 0 0.3em;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+}
+a {
+  color: var(--accent);
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--text-muted);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-primario {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.btn-primario:hover:not(:disabled) {
+  filter: brightness(1.08);
+  border-color: var(--accent);
+}
+.btn-icone {
+  padding: 0 0.5rem;
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+
+.chip {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.chip-lido {
+  background: var(--read-bg);
+  border-color: var(--read);
+}
+.chip-escrito {
+  background: var(--write-bg);
+  border-color: var(--write);
+}
+.chip-x {
+  color: var(--text-muted);
+}
+
+/* ---------- home ---------- */
+.home-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+a.modulo {
+  text-decoration: none;
+}
+.modulo-pronto {
+  border-color: var(--accent) !important;
+  cursor: pointer;
+}
+.modulo-pronto:hover {
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+}
+.modulo-pronto .modulo-status {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ---------- modo Execução ---------- */
+.execucao {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.marca {
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text);
+}
+.barra h1 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-muted);
+}
+.controles,
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.opcoes {
+  margin-left: auto;
+  gap: 0.8rem;
+}
+.velocidade,
+.ir-para label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.velocidade input {
+  width: 6rem;
+}
+.ir-para input {
+  width: 4.5rem;
+  font: inherit;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+}
+.toggle {
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.execucao-corpo {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+}
+.palco {
+  min-width: 0;
+}
+.status-ciclo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.ciclo {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.instr-atual {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+}
+.instr-asm {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.campos {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.campo-bits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.3rem;
+  font-size: 0.75rem;
+  color: var(--campo-text);
+  border-right: 1px solid rgb(0 0 0 / 0.2);
+}
+.campo-bits:last-child {
+  border-right: none;
+}
+.campo-bits small {
+  font-size: 0.65rem;
+}
+.campo-op {
+  background: var(--campo-op);
+}
+.campo-rs {
+  background: var(--campo-rs);
+}
+.campo-rt {
+  background: var(--campo-rt);
+}
+.campo-rd {
+  background: var(--campo-rd);
+}
+.campo-shamt {
+  background: var(--campo-shamt);
+}
+.campo-imm {
+  background: var(--campo-imm);
+}
+
+.fases {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.fases li {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+}
+.fases .fase-feita {
+  color: var(--text);
+}
+.fases .fase-atual {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.fase-desc {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+}
+
+.alertas {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--alert-bg);
+  border-left: 4px solid var(--alert-border);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.legenda-cores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0;
+}
+.leg::before {
+  content: '';
+  display: inline-block;
+  width: 1.4rem;
+  height: 3px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  background: currentColor;
+}
+.leg-dados {
+  color: var(--wire-data);
+}
+.leg-endereco {
+  color: var(--wire-addr);
+}
+.leg-instrucao {
+  color: var(--wire-instr);
+}
+.leg-controle {
+  color: var(--wire-control);
+}
+.leg-inativo {
+  color: var(--text-muted);
+}
+.leg-inativo::before {
+  background: var(--wire-inactive);
+}
+
+/* ---------- SVG do datapath ---------- */
+.datapath {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+}
+.wire-line,
+.wire-hit {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: square;
+}
+.wire-hit {
+  stroke: transparent;
+  stroke-width: 10;
+}
+.wire-dados {
+  --c: var(--wire-data);
+}
+.wire-endereco {
+  --c: var(--wire-addr);
+}
+.wire-instrucao {
+  --c: var(--wire-instr);
+}
+.wire-controle {
+  --c: var(--wire-control);
+}
+.wire-line {
+  stroke: var(--c);
+  transition: stroke 0.2s;
+}
+.wire-dot,
+.wire-end {
+  fill: var(--c);
+}
+.wire-inativo .wire-line {
+  stroke: var(--wire-inactive);
+}
+.wire-inativo .wire-dot,
+.wire-inativo .wire-end {
+  fill: var(--wire-inactive);
+}
+.wire-futuro .wire-line {
+  stroke: var(--wire-inactive);
+  stroke-dasharray: 3 5;
+  opacity: 0.6;
+}
+.wire-futuro .wire-dot,
+.wire-futuro .wire-end {
+  fill: var(--wire-inactive);
+}
+.wire-name {
+  font-size: 10px;
+  fill: var(--text-muted);
+}
+.wire-name-ctl {
+  fill: var(--wire-control);
+  font-weight: 600;
+}
+.wire-inativo .wire-name-ctl,
+.wire-futuro .wire-name-ctl {
+  fill: var(--text-muted);
+  font-weight: 400;
+  opacity: 0.7;
+}
+.value-tag rect {
+  fill: var(--surface);
+  stroke: var(--c);
+  stroke-width: 1.2;
+}
+.value-tag text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--text);
+}
+
+.block {
+  cursor: pointer;
+}
+.block:focus {
+  outline: none;
+}
+.block:focus-visible .block-body {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.block-body {
+  fill: var(--surface);
+  stroke: var(--text);
+  stroke-width: 1.5;
+  transition: opacity 0.2s;
+}
+.block-controle .block-body {
+  stroke: var(--wire-control);
+}
+.block-controle .block-label {
+  fill: var(--wire-control);
+}
+.block-label {
+  fill: var(--text);
+  pointer-events: none;
+}
+.block-hit {
+  fill: transparent;
+}
+.block-inativo .block-body,
+.block-inativo .block-label {
+  opacity: 0.4;
+}
+.block-futuro .block-body {
+  stroke-dasharray: 4 4;
+  opacity: 0.35;
+}
+.block-futuro .block-label {
+  opacity: 0.35;
+}
+.block:hover .block-body {
+  stroke-width: 2.5;
+}
+.block-selecionado .block-body {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.block-selecionado.block-bus .block-hit {
+  fill: var(--accent);
+  opacity: 0.15;
+}
+.mux-switch {
+  stroke: var(--text);
+  stroke-width: 2;
+}
+.mux-word {
+  opacity: 0.6;
+}
+
+/* ---------- lateral ---------- */
+.lateral {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  align-self: start;
+  position: sticky;
+  top: 4.5rem;
+  max-height: calc(100vh - 6rem);
+  overflow: auto;
+}
+.abas {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+.aba {
+  flex: 1 1 auto;
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.35rem;
+  white-space: nowrap;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.aba[aria-selected='true'] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.painel {
+  padding: 0.75rem;
+}
+.painel-legenda {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+}
+.painel-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
+}
+.vazio {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.regs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 0.5rem;
+}
+.reg {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.3rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+}
+.reg-nome small {
+  color: var(--text-muted);
+}
+.reg-valor {
+  font-family: var(--font-mono);
+  text-align: right;
+}
+.reg-zero .reg-valor {
+  color: var(--text-muted);
+}
+.reg-lido {
+  background: var(--read-bg);
+  border-color: var(--read);
+}
+.reg-escrito {
+  background: var(--write-bg);
+  border-color: var(--write);
+}
+.reg-novo {
+  color: var(--write);
+  font-weight: 700;
+}
+
+.mem {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.mem th,
+.mem td {
+  text-align: left;
+  padding: 0.15rem 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+.mem-acessada td {
+  background: var(--write-bg);
+}
+.imem-atual td {
+  background: var(--read-bg);
+  font-weight: 600;
+}
+.bp {
+  font-size: 0.7rem;
+  border: none;
+  background: none;
+  color: var(--border);
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+.bp-on {
+  color: var(--wire-control);
+}
+
+.sinais {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.sinais th,
+.sinais td {
+  text-align: left;
+  padding: 0.2rem 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+.sinais th {
+  font-weight: 500;
+}
+.sinal-on {
+  color: var(--wire-control);
+  font-weight: 700;
+}
+
+.painel-editor {
+  display: grid;
+  gap: 0.6rem;
+}
+.campo {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+.campo textarea,
+.campo select {
+  font-size: 0.85rem;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+}
+.campo select {
+  font-family: var(--font-sans);
+}
+.erros {
+  margin: 0;
+  padding: 0.4rem 0.6rem 0.4rem 1.4rem;
+  font-size: 0.82rem;
+  background: var(--alert-bg);
+  border-left: 3px solid var(--wire-control);
+}
+.editor-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.info-bloco {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+.info-bloco header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.info-bloco h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+.info-bloco h3 {
+  font-size: 0.85rem;
+  margin: 0.8rem 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.portas {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.slide-ref {
+  margin-top: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.atalhos {
+  padding: 0.5rem 1rem 1rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1000px) {
+  .execucao-corpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lateral {
+    position: static;
+    max-height: none;
+  }
+  .opcoes {
+    margin-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  .barra {
+    position: static;
+  }
+  .barra h1 {
+    display: none;
+  }
+  .execucao-corpo {
+    padding: 0.5rem;
+  }
+  .palco {
+    overflow-x: auto;
+  }
+  .datapath {
+    min-width: 720px;
+  }
+}

@@ -114,3 +114,36 @@ A ferramenta passa a ser **apoio à disciplina teórica AOC1**. A fonte da verda
 
 **Pendente**
 - Confirmar com a professora os itens 3–5 do `DUVIDAS.md`.
+
+## Fase 3 — Datapath SVG + Modo Execução (M1) — set/2026
+
+**Pronto**
+- **Datapath em SVG** com o layout do slide (Aula 06 p. 48 / Aula 07 slide 8; P&H fig. 4.24). Coordenadas em `src/ui/datapath/monoLayout.ts`, com os **mesmos ids de fio e de bloco da netlist**. Um teste garante que todo fio e todo bloco da netlist têm desenho e texto, que tudo cabe no viewBox e que não há segmento diagonal. Rótulos da figura: "Instruction [25–21]", "Read data 1", "Sign extend", "16/32", "26/28"…
+- **Componentes SVG**: `Wire` (espessura pela largura, cor pela categoria, junções, etiqueta de valor, tooltip com dec, dec com sinal, hex e bin) e `Block` (retângulo, elipse, ULA/somador, AND, mux com a **chave desenhada na entrada selecionada**, barramento clicável dos campos). Blocos de controle em vermelho, como no slide.
+- **Modo Execução (M1)** em `#/m1`:
+  - Controles: passo, voltar (histórico completo), rodar/pausar com velocidade, reiniciar, ir ao ciclo N, breakpoint por endereço.
+  - **Fases visuais** (busca → decodificação → execução → memória → escrita): o que ainda não chegou fica tracejado.
+  - Fios que não influenciam o ciclo ficam esmaecidos (algoritmo de atividade da Fase 2).
+  - Formato dec/hex. Dados de 32 bits em decimal saem com sinal; instrução sempre em hex; sinais de 2–3 bits em binário.
+  - Instrução do ciclo com os campos coloridos como no slide (opcode, rs, rt, rd, shamt, funct/imediato).
+- **Painéis**:
+  - Registradores: lidos em azul, o que será escrito em laranja com "antigo → novo".
+  - Memória de dados: palavra ou bytes little-endian, palavra acessada destacada.
+  - Memória de instruções: PC atual e breakpoints.
+  - Controle: 9 sinais + controle da ULA, com o selo "X no slide" nos don't cares e a explicação do slide em cada sinal.
+  - Editor: Assembly + estado inicial (`$8 = 5`, `M[8] = 7`), 4 exemplos, erros em português com a linha, "Copiar link".
+- **Clique num bloco** abre a explicação (`src/content/blocos.ts`): o que ele faz, se é combinacional ou sequencial, entradas e saídas com largura e valor, e a referência ao slide (aula e página). A ULA mostra também os sinais internos (Bnegate, overflow).
+- **Link compartilhável**: programa + estado inicial no hash (`#/m1?p=…`, base64url). A barra de endereço sempre tem o link do programa carregado.
+- **Atalhos**: `→` passo, `←` volta, `Espaço` rodar/pausar, `R` reiniciar, `H` hex/dec, `F` fases, `Esc` fecha a explicação.
+- **Tema** claro/escuro/sistema (localStorage com try/catch). A página inicial abre o M1.
+- **Alertas** do simulador com texto em português (`src/content/textos.ts`).
+- **Testes**:
+  - Unidade: store (passo/voltar/fases/ir para/erros), parser do estado inicial, link, layout × netlist. Total de 312.
+  - e2e (8): 5 passos do programa de exemplo conferidos na tela contra o golden trace; valores e escrita pendente no lw; todos os atalhos; Rodar com breakpoint; explicação do bloco; editor com erro, programa novo e link aberto numa aba nova; tema escuro; página inicial.
+- Conferido visualmente (capturas de tela) no claro, no escuro, em fases e em 390 px: sem rolagem horizontal da página, e o datapath rola dentro do quadro.
+- Bundle: 67 kB gzip.
+
+**Pendente / fora desta fase**
+- Botão "Prever" (princípio 1 do plano) e atalho `P`: não estavam no prompt da Fase 3. Ficam para a Fase 4, junto com o quiz, ou para a Fase 9.
+- Atalhos `1..9` para trocar de módulo: só existe o M1 por enquanto.
+- Narração textual por ciclo e Modo Aula: Fase 9.
