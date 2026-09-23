@@ -21,3 +21,8 @@ Slide: X em RegDst/MemtoReg para sw e beq (e vários para j). Verilog do lab: 0.
 
 ## 5. Uso de `sll`/`srl`
 O hardware do lab não tem shifts, mas os exercícios de vetor da lista usam. Vale incluir `sll` no Laboratório de Extensão (M8)?
+
+## 6. Operando numérico do `j` e do `beq` no montador
+No montador da ferramenta, `j 8` significa **endereço em bytes** (destino = 8, campo addr = 2) e `beq $1, $2, 3` significa **deslocamento em palavras** (campo imm = 3), como no MARS. Com rótulos não há ambiguidade. O programa da Prática 10 (`j 0`, `beq $8, $9, 1`) dá o mesmo hex nas duas leituras, mas um aluno que escreva `j 2` pensando no campo addr vai saltar para o endereço 2 (erro: não é múltiplo de 4).
+- Decisão provisória: convenção do MARS; o M4 (Codificação) vai mostrar explicitamente campo addr × endereço de destino.
+- Ação: confirmar com a professora qual leitura ela usa em sala.

@@ -6,7 +6,7 @@ O aluno vê o processador da **Prática 10** funcionando: fios acendendo, valore
 
 ## Estado atual
 
-Fase 0 (esqueleto) concluída. Próximo passo: **Fase 1** (`docs/prompts/fase-01-isa-montador-e-disassembler.md`).
+Fases 0 e 1 concluídas. Próximo passo: **Fase 2** (`docs/prompts/fase-02-simulador-monociclo-bit-exato.md`).
 
 ## Mapa do repositório
 
