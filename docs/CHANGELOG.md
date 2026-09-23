@@ -41,3 +41,47 @@
 
 **Pendente**
 - Nada da fase. O editor de programa (UI) é da Fase 3.
+
+## Fase 2 — Simulador monociclo bit-exato — set/2026
+
+**Pronto**
+- `src/core/netlist.ts`: tipos da netlist declarativa (componentes com portas e dependências combinacionais por saída, fios com largura e categoria) e `validateNetlist`, que confere ids, portas, uma origem por entrada e ausência de laço combinacional. Também `evaluationOrder`: ordenação topológica que ignora entradas de borda, então a realimentação por PC, banco e memória não é laço.
+- `src/core/mono/datapath.ts`: netlist completa do `processador.v`, com 25 componentes e 41 fios. Os ids batem com os nomes do golden trace (`rd1`, `alu_b`, `pcsrc`, `next_pc`…) e dos sinais (`RegDst`, `ALUSrc`…). Inclui `reset`, `reg_write_enable`/`mem_write_enable`, `overflow`, e cada componente guarda o nome da instância no Verilog.
+- `src/core/mono/components/`:
+  - `ula.v` bit a bit: muxB/Bnegate, ripple-carry com carry out, `slt = sinal XOR overflow`, `zero = NOR`, overflow só em add/sub, e códigos fora da tabela → 0.
+  - `aluControl.v` pelas mesmas equações do Verilog (ALUOp 11 e funct desconhecido → 000).
+  - `controle_principal.v` (don't cares = 0).
+  - Memórias: PC[6:2]; `address[7:2]`, little-endian, MemRead = 0 → 0, bytes ≥ 64 descartados.
+  - Somador, mux, shift left 2, concatenação do jump.
+- `src/core/mono/step.ts`: `step(state, { reset }) → { next, snapshot }`, puro. Avalia genericamente a netlist em ordem topológica e depois aplica a borda de subida. O snapshot traz:
+  - o valor de **todos** os 41 fios;
+  - a instrução decodificada;
+  - os sinais internos da ULA;
+  - alertas;
+  - as escritas da borda (antes → depois).
+
+  O reset do PC é assíncrono (PC = 0 no mesmo ciclo), e o reset desabilita RegWrite e MemWrite. `run(state, n)` gera o histórico.
+- Alertas (código + componente + valor; os textos ficam para `src/content` na Fase 3):
+  - `opcode-desconhecido`
+  - `funct-desconhecido` (inclui a palavra 0x00000000 depois do fim do programa)
+  - `dmem-fora-da-memoria` (byte ≥ 64)
+  - `dmem-endereco-alto` (≥ 256: só `address[7:2]` conta e o acesso dá a volta)
+  - `dmem-desalinhado`
+  - `pc-alem-da-imem` (PC ≥ 128 dá a volta)
+- `src/core/mono/activity.ts`: algoritmo de atividade da Seção 6. Parte dos elementos escritos, anda para trás, segue só a entrada selecionada dos muxes e só lê a memória com MemRead = 1. Um sinal de controle está ativo se vale 1 ou seleciona um mux ativo.
+- Testes (200 novos, 310 no total):
+  - **Golden trace: 22 ciclos × todos os campos, verde.** Confirmado com mutações de propósito: `sub` trocado → 109 falhas; mux de desvio invertido → falha.
+  - Tabelas 2.3 e 2.4 inteiras; todo opcode desconhecido zera o controle.
+  - ULA com slt de sinais opostos (−2³¹ < 1), overflow e códigos inválidos.
+  - Propriedades com fast-check (2 mil pares aleatórios): add/sub/and/or/slt/overflow/zero contra aritmética de referência.
+  - Banco (`$0` imutável), memórias (little-endian, MemRead = 0, ≥ 64, ≥ 256, desalinhado, wrap do PC), reset, pureza do `step`, atividade para R/lw/sw/beq tomado e não tomado/j/reset, e validação da netlist.
+- Cobertura: `core/mono` com 100% das linhas e 98% das instruções. Limite de 95% fixado no `vite.config.ts`.
+- Dependência nova (só dev): `fast-check`, pedida na Seção 8 do plano. Não entra no bundle.
+
+**Decisões**
+- Avaliador genérico sobre a netlist, em vez de um `step` escrito à mão: M2 (construção), M5 (timing) e M8 (extensões) poderão alterar a netlist sem reescrever o simulador, e a injeção de falhas (Fase 4) vira "sobrescrever o valor de um fio".
+- Byte fora dos 64 lê 0 (no Verilog seria X), sempre com alerta.
+- O "reset" do `step` é o KEY0 da placa: só zera o PC. Registradores e memória não são reiniciados; recarregar o estado inicial é papel da UI.
+
+**Pendente**
+- Nada do aceite da fase. Textos dos alertas em pt-BR: Fase 3 (`src/content`). Latch de bypass do `BancoReg.v` na simulação Verilog: `DUVIDAS.md` item 7, para a Fase 10.

@@ -14,6 +14,8 @@ export default defineConfig({
       exclude: ['src/core/**/*.test.ts'],
       thresholds: {
         'src/core/bits.ts': { 100: true },
+        // Aceite da Fase 2: cobertura do core/mono ≥ 95%.
+        'src/core/mono/**': { statements: 95, branches: 85, functions: 95, lines: 95 },
       },
     },
   },

@@ -6,7 +6,7 @@ O aluno vê o processador da **Prática 10** funcionando: fios acendendo, valore
 
 ## Estado atual
 
-Fases 0 e 1 concluídas. Próximo passo: **Fase 2** (`docs/prompts/fase-02-simulador-monociclo-bit-exato.md`).
+Fases 0, 1 e 2 concluídas (core: bits, ISA/montador e simulador monociclo bit-exato com golden trace verde). Próximo passo: **Fase 3** (`docs/prompts/fase-03-datapath-svg-modo-execucao-m1.md`).
 
 ## Mapa do repositório
 
