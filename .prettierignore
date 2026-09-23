@@ -1,0 +1,9 @@
+dist
+coverage
+playwright-report
+test-results
+reference
+docs
+tools
+package-lock.json
+*.md

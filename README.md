@@ -6,7 +6,7 @@ O aluno vê o processador da **Prática 10** funcionando: fios acendendo, valore
 
 ## Estado atual
 
-Planejamento concluído; implementação ainda não começou. Próximo passo: **Fase 0** (`docs/prompts/fase-00-esqueleto-e-fundacao.md`).
+Fase 0 (esqueleto) concluída. Próximo passo: **Fase 1** (`docs/prompts/fase-01-isa-montador-e-disassembler.md`).
 
 ## Mapa do repositório
 

@@ -1,0 +1,12 @@
+{
+  "//": "O core não conhece a UI: sem lib DOM e sem tipos do React. Se algo em src/core usar DOM/React, este check falha.",
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.core.tsbuildinfo",
+    "lib": ["ES2022"],
+    "types": [],
+    "jsx": "preserve"
+  },
+  "include": ["src/core"],
+  "exclude": ["src/core/**/*.test.ts"]
+}
