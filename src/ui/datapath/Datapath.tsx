@@ -15,6 +15,8 @@ interface Props {
   formato: Formato;
   selecionado: string | null;
   onSelect: (id: string) => void;
+  /** Fios destacados (campo sob o mouse, fio com falha…). */
+  destaque?: ReadonlySet<string>;
 }
 
 /** Fio que chega na porta `sel` de cada mux. */
@@ -28,7 +30,7 @@ const WIRE_ORDER = [...MONO_NETLIST.wires].sort(
   (a, b) => Number(b.kind === 'controle') - Number(a.kind === 'controle'),
 );
 
-function DatapathImpl({ wires, activity, fase, formato, selecionado, onSelect }: Props) {
+function DatapathImpl({ wires, activity, fase, formato, selecionado, onSelect, destaque }: Props) {
   const wireStatus = (id: string): WireStatus => {
     if (WIRES[id]!.fase > fase) return 'futuro';
     return activity.wires.has(id) ? 'ativo' : 'inativo';
@@ -56,6 +58,7 @@ function DatapathImpl({ wires, activity, fase, formato, selecionado, onSelect }:
           value={wires[w.id]}
           status={wireStatus(w.id)}
           formato={formato}
+          destaque={destaque?.has(w.id) ?? false}
         />
       ))}
       {MONO_NETLIST.components.map((c) => {

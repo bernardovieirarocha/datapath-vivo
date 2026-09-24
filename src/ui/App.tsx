@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { MODULOS } from '../content/modulos';
 import { Execucao } from './modes/execucao/Execucao';
+import { Codificacao } from './modes/codificacao/Codificacao';
+import { Controle } from './modes/controle/Controle';
 import { Explorar } from './modes/explorar/Explorar';
 import { lerRota, type Rota } from './rota';
 import { TemaToggle } from './TemaToggle';
 
 /** Módulos já implementados → rota. */
-const ROTAS: Partial<Record<string, string>> = { M1: '#/m1' };
+const ROTAS: Partial<Record<string, string>> = { M1: '#/m1', M3: '#/m3', M4: '#/m4' };
 
 export function App() {
   const [rota, setRota] = useState<Rota>(() => lerRota(location.hash));
@@ -18,6 +20,17 @@ export function App() {
 
   if (rota.pagina === 'programa') return <Execucao />;
   if (rota.pagina === 'instrucao') return <Explorar inicial={rota.instrucao} />;
+  if (rota.pagina === 'controle') {
+    return (
+      <Controle
+        key={`${rota.secao}${rota.instrucao ?? ''}`}
+        secao={rota.secao}
+        instrucao={rota.instrucao}
+      />
+    );
+  }
+  if (rota.pagina === 'codificacao')
+    return <Codificacao key={rota.instrucao} inicial={rota.instrucao} />;
 
   return (
     <main className="home">

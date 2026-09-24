@@ -4,7 +4,8 @@ import { step } from '../../../core/mono';
 import { narrar } from '../../../content/narracao';
 import { formatar } from '../../format';
 import { MONO_NETLIST } from '../../../core/mono';
-import { ATALHOS, lerInstrucao, lerValor, montarEstado, valorPadraoMem } from './estado';
+import { exploreMem as valorPadraoMem } from '../../../core/mono';
+import { ATALHOS, lerInstrucao, lerValor, montarEstado } from './estado';
 
 const WIRE = new Map(MONO_NETLIST.wires.map((w) => [w.id, w]));
 
@@ -41,6 +42,18 @@ describe('lerInstrucao', () => {
       texto: 'lw $8, 8($17)',
     });
     expect(lerInstrucao('0x0')).toEqual({ ok: true, word: 0, texto: 'nop' });
+    expect(lerInstrucao('100011 10001 01000 0000000000001000')).toMatchObject({
+      ok: true,
+      word: 0x8e280008,
+    });
+    expect(lerInstrucao('0b1000')).toMatchObject({
+      ok: false,
+      erro: expect.stringMatching(/jr \$0, que não faz parte/),
+    });
+    expect(lerInstrucao('0b111111')).toMatchObject({
+      ok: false,
+      erro: expect.stringMatching(/funct desconhecido/),
+    });
   });
   it('erros em português', () => {
     expect(lerInstrucao('')).toMatchObject({

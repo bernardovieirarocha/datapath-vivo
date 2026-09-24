@@ -6,7 +6,12 @@ O aluno vê o datapath **dos slides** funcionando: fios acendendo, valores em ca
 
 ## Estado atual
 
-Fases 0–3 concluídas: core (bits, ISA/montador, simulador monociclo com golden trace verde) e o **M1**: digite qualquer instrução e veja o caminho dela no datapath do slide (`#/m1`), ou rode um programa ciclo a ciclo (`#/m1/programa`). Rode `npm run dev`. Próximo passo: **Fase 4** (`docs/prompts/fase-04-controle-quiz-e-injecao-de-falhas-m3-cod.md`).
+Fases 0–4 concluídas. Rode `npm run dev`:
+- `#/m1`: digite qualquer instrução e veja o caminho dela no datapath do slide; ou rode um programa ciclo a ciclo (`#/m1/programa`).
+- `#/m3`: quiz de sinais de controle, tabelas e "e se o sinal X travar?".
+- `#/m4`: codificação/decodificação em bits e calculadoras de desvio/salto.
+
+Próximo passo: **Fase 6** (timing e caminho crítico, `docs/prompts/fase-06-timing-e-caminho-critico-m5.md`). A Fase 5 (placa) saiu na v2.
 
 ## Mapa do repositório
 

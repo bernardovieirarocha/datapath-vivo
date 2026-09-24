@@ -3,7 +3,20 @@ import { decodeCompartilhado } from './modes/execucao/link';
 import { useExecucao } from './modes/execucao/store';
 
 export type Rota =
-  { pagina: 'inicio' } | { pagina: 'instrucao'; instrucao?: string } | { pagina: 'programa' };
+  | { pagina: 'inicio' }
+  | { pagina: 'instrucao'; instrucao?: string }
+  | { pagina: 'programa' }
+  | { pagina: 'controle'; secao: 'quiz' | 'tabelas' | 'falhas'; instrucao?: string }
+  | { pagina: 'codificacao'; instrucao?: string };
+
+function paramI(q: string | undefined): string | undefined {
+  if (!q) return undefined;
+  try {
+    return decodeURIComponent(q);
+  } catch {
+    return undefined;
+  }
+}
 
 /**
  * Lê o hash:
@@ -28,13 +41,17 @@ export function lerRota(hash: string): Rota {
   }
   const m = /^#\/m1(?:\?i=([^&]*))?$/.exec(hash);
   if (m) {
-    let instrucao: string | undefined;
-    try {
-      instrucao = m[1] ? decodeURIComponent(m[1]) : undefined;
-    } catch {
-      instrucao = undefined;
-    }
-    return { pagina: 'instrucao', instrucao };
+    return { pagina: 'instrucao', instrucao: paramI(m[1]) };
   }
+  const m3 = /^#\/m3(?:\/(tabelas|falhas))?(?:\?i=([^&]*))?$/.exec(hash);
+  if (m3) {
+    return {
+      pagina: 'controle',
+      secao: (m3[1] as 'tabelas' | 'falhas' | undefined) ?? 'quiz',
+      instrucao: paramI(m3[2]),
+    };
+  }
+  const m4 = /^#\/m4(?:\?i=([^&]*))?$/.exec(hash);
+  if (m4) return { pagina: 'codificacao', instrucao: paramI(m4[1]) };
   return { pagina: 'inicio' };
 }

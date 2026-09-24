@@ -161,3 +161,44 @@ Pedido da monitoria: algo mais interativo, em que o aluno coloca **qualquer inst
 - Link compartilhável da instrução: `#/m1?i=lw%20$8,%208($17)`.
 - Testes: 9 de unidade (leitura da instrução, valores, montagem do estado, narração de R/lw/sw/beq/j/addi/slt/$0/opcode desconhecido) e 6 e2e (caminho muda ao digitar, valores mudam fios, explicação e resultado, beq tomado × não tomado, etapas, erro e hex, link). Total: 321 de unidade e 14 e2e.
 - Conferido em capturas de tela no claro, no escuro e em 390 px.
+
+## Fase 4 — Controle, Quiz e injeção de falhas (M3) + Codificação (M4) — set/2026
+
+**Pronto**
+- **Core**
+  - `step(state, { overrides })`: sobrescritas de fio aplicadas logo depois de o componente calcular, antes de o valor seguir adiante. O sinal falho propaga pelo datapath e chega à borda.
+  - `core/faults`:
+    - falhas stuck-at (0/1; ALUOp 00–11) e invertido, em qualquer sinal do controle e no Zero;
+    - `compare` roda a execução certa e a falha e devolve as diferenças (registrador, memória, PC);
+    - `runFaultCases` roda 11 casos (add, sub, and, or, slt, addi, lw, sw, beq tomado/não tomado, j) com valores escolhidos para os erros não passarem despercebidos por coincidência.
+  - `exploreState` (estado para ver uma instrução) foi para o core e é usado pelo Explorar, pelo quiz e pelas falhas.
+- **M3 — Controle** (`#/m3`, `#/m3/tabelas`, `#/m3/falhas`)
+  - **Quiz de sinais** ("Qual é o caminho de dados da instrução?", Aula 06 p. 36–39):
+    - instrução aleatória, digitada ou vinda do Explorar;
+    - campos coloridos; 0/1/X para cada um dos 9 sinais;
+    - X aceito nos don't cares, com explicação ("RegWrite = 0, nada é escrito no banco");
+    - cada sinal errado vem com a consequência simulada ("Com RegDst = 0: escreveria em $18 em vez de $8"), ou o aviso de que por acaso não muda nada nesta instrução;
+    - datapath "com os seus sinais" × "com os sinais certos", com os sinais errados destacados;
+    - placar da sessão e "Mostrar resposta".
+  - **Tabelas**: controle principal (R, addi, lw, sw, beq, j, com X) e controle da ULA (3 bits), com a linha da instrução acesa e a nota dos nomes em português do slide (MemparaReg, EscreveReg…).
+  - **E se? (falhas)**: escolha do sinal e do valor travado (ou invertido). A pergunta aparece no formato da prova ("O que acontece se o sinal MemtoReg ficar preso em 1?") com o resumo "passam a falhar / continuam certas". A tabela mostra, por instrução, o que deveria acontecer e o que acontece com a falha. Clicar numa linha mostra o datapath desse caso, com o fio travado destacado.
+- **M4 — Codificação** (`#/m4`)
+  - Instrução em Assembly, hex ou binário (32 dígitos, com espaços).
+  - 32 bits coloridos por campo (cores do slide), com índices dos bits, valor decimal de cada campo (imediato com sinal) e a conversão binário → hex de 4 em 4 bits.
+  - **Decodificação passo a passo** pelo método da lista: opcode → se 000000, o funct decide → os outros campos → Assembly.
+  - Passar o mouse num campo (ou num passo) destaca no datapath os fios que ele alimenta.
+  - **Calculadoras** de desvio (PC + 4 + ext(imm) × 4) e de salto ({PC+4[31–28], campo, 00}), feitas com os próprios blocos do simulador, com o botão **"Exemplo do slide"** (Aula 06 p. 45: PC + 4 = 0x00400010, campo 1 → 0x00000004).
+- **Ligações**: a página inicial abre M1, M3 e M4. O Explorar tem os links "quiz desta instrução" e "ver a codificação", e todas as telas aceitam `?i=<instrução>` no link.
+- O campo de instrução passou a aceitar binário e a recusar, pelo hex/binário, instruções de extensão (jr, bne…). Antes elas só eram recusadas pelo Assembly.
+- **Testes**:
+  - Unidade (348): falhas com as respostas das perguntas de prova calculadas à mão (MemtoReg em 1, RegDst em 0/1, ALUSrc em 0/1, Branch, Zero invertido, Jump, RegWrite, MemRead, MemWrite, ALUOp); textos das diferenças; decodificação passo a passo; correção do quiz (inclusive o exemplo do slide: add → 1 0 0 0 10 0 0 1); gerador aleatório.
+  - e2e (23): quiz certo, errado (com consequência e datapath), com X e com "mostrar resposta"; tabelas; "e se?"; codificação (hex, binário, destaque de fio, calculadoras com o exemplo do slide).
+- Conferido em capturas de tela. As 5 telas cabem em 390 px sem rolagem horizontal da página.
+- Bundle: 79 kB gzip.
+
+**Achados durante os testes**
+- Ao calcular à mão as respostas das falhas, três previsões minhas saíram erradas e o simulador estava certo. Com ALUSrc preso em 1, o slt 5 < 16426 dá 1 por coincidência. Com MemWrite preso em 1, o endereço −2 cai fora da memória. Com ALUOp preso em 10, o AND do beq não tomado segue ≠ 0. Os valores dos casos foram trocados para não haver coincidências, e isso vira material de aula: "nem toda falha aparece em todo teste".
+
+**Pendente**
+- Visão em portas (PLA) do controle, do slide "Solução em hardware de controle" (Aula 06, p. 35): o slide é só imagem, não deu para extrair as portas com fidelidade. Fica para a Fase 9, junto com a revisão de conteúdo.
+- Injeção de falhas também no "Programa passo a passo" (rodar o programa inteiro com o sinal travado): o "E se?" já mostra por classe de instrução. Fica como ideia.

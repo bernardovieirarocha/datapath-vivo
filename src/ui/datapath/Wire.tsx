@@ -12,6 +12,7 @@ interface Props {
   value: number | undefined;
   status: WireStatus;
   formato: Formato;
+  destaque?: boolean;
 }
 
 const d = (pts: readonly Pt[]) =>
@@ -24,7 +25,7 @@ function strokeWidth(width: number): number {
 }
 
 /** Fio do datapath: espessura pela largura, cor pela categoria, etiqueta com o valor. */
-export function Wire({ id, layout, width, kind, value, status, formato }: Props) {
+export function Wire({ id, layout, width, kind, value, status, formato, destaque }: Props) {
   const mostraValor = status === 'ativo' && value !== undefined;
   const titulo = `${id} (${width} ${width === 1 ? 'bit' : 'bits'})${
     mostraValor
@@ -36,11 +37,17 @@ export function Wire({ id, layout, width, kind, value, status, formato }: Props)
   const branches = layout.paths.slice(1);
   const last = layout.paths.map((p) => p[p.length - 1]!);
   return (
-    <g className={`wire wire-${kind} wire-${status}`} data-wire={id} data-status={status}>
+    <g
+      className={`wire wire-${kind} wire-${status}${destaque ? ' wire-destaque' : ''}`}
+      data-wire={id}
+      data-status={status}
+    >
       <title>{titulo}</title>
       {layout.paths.map((p, i) => (
         <path key={i} d={d(p)} className="wire-hit" />
       ))}
+      {destaque &&
+        layout.paths.map((p, i) => <path key={`g${i}`} d={d(p)} className="wire-glow" />)}
       {layout.paths.map((p, i) => (
         <path key={i} d={d(p)} className="wire-line" strokeWidth={strokeWidth(width)} />
       ))}

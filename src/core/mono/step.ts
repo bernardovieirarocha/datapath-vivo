@@ -61,6 +61,17 @@ export interface Snapshot {
   };
 }
 
+/**
+ * Sobrescritas de fio: o valor calculado pelo componente passa por esta função
+ * antes de seguir no datapath (ex.: sinal de controle travado em 1, Zero invertido).
+ * É o gancho da injeção de falhas (`core/faults`) e do quiz.
+ */
+export type Overrides = Readonly<Record<string, (value: number) => number>>;
+
+export interface StepOptions {
+  overrides?: Overrides;
+}
+
 export interface StepResult {
   next: MonoState;
   snapshot: Snapshot;
@@ -159,7 +170,10 @@ function reader(componentId: string, wires: Record<string, number>): Read {
 }
 
 /** Avalia todos os fios (lógica combinacional) a partir do estado atual. */
-export function evaluate(state: MonoState): Pick<Snapshot, 'wires' | 'alerts' | 'internals'> {
+export function evaluate(
+  state: MonoState,
+  opts: StepOptions = {},
+): Pick<Snapshot, 'wires' | 'alerts' | 'internals'> {
   const wires: Record<string, number> = {};
   const ctx: EvalContext = { state, alerts: [], internals: {} };
   for (const spec of ORDER) {
@@ -168,7 +182,8 @@ export function evaluate(state: MonoState): Pick<Snapshot, 'wires' | 'alerts' | 
       const value = outputs[o.name];
       if (value === undefined) throw new Error(`${spec.id} não calculou a saída ${o.name}`);
       for (const w of OUTPUT_WIRES.get(`${spec.id}.${o.name}`) ?? []) {
-        wires[w.id] = (value & mask(w.width)) >>> 0;
+        const f = opts.overrides?.[w.id];
+        wires[w.id] = ((f ? f(value) : value) & mask(w.width)) >>> 0;
       }
     }
   }
@@ -191,8 +206,8 @@ function memoryAccessAlerts(wires: Record<string, number>, alerts: Alert[]): voi
  * Um ciclo de clock: avalia a lógica combinacional com o estado atual e aplica a
  * borda de subida (PC, banco de registradores, memória de dados). Função pura.
  */
-export function step(state: MonoState): StepResult {
-  const { wires, alerts, internals } = evaluate(state);
+export function step(state: MonoState, opts: StepOptions = {}): StepResult {
+  const { wires, alerts, internals } = evaluate(state, opts);
   const v = (id: string) => wires[id]!;
 
   // Borda de subida.

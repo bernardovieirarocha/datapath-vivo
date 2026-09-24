@@ -882,3 +882,383 @@ input.invalida,
     font-size: 1.1rem;
   }
 }
+
+.wire-glow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 9;
+  stroke-opacity: 0.35;
+  stroke-linejoin: round;
+}
+.wire-destaque .wire-name {
+  fill: var(--accent);
+  font-weight: 700;
+}
+
+/* ---------- páginas de módulo (M3, M4) ---------- */
+.pagina-modulo {
+  padding: 0.75rem 1rem 2rem;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.9rem;
+}
+.pagina-modulo h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.campo-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.campo-inline input {
+  font-size: 1rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  width: 16rem;
+}
+.links-cruzados {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.88rem;
+  margin: 0.8rem 0 0;
+}
+.link-btn {
+  font: inherit;
+  border: none;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+.tabela-rolavel {
+  overflow-x: auto;
+}
+.linha-acesa th,
+.linha-acesa td {
+  background: var(--read-bg);
+  font-weight: 700;
+}
+.tabela-controle,
+.tabela-falhas {
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 100%;
+}
+.tabela-controle th,
+.tabela-controle td,
+.tabela-falhas th,
+.tabela-falhas td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+}
+.tabela-falhas th,
+.tabela-falhas td {
+  text-align: left;
+}
+.tabela-controle thead th {
+  background: var(--wire-control);
+  color: #fff;
+  font-weight: 600;
+}
+.tabelas {
+  display: grid;
+  gap: 0.5rem;
+}
+.nota {
+  font-size: 0.82rem;
+}
+.tabela-falhas .ok {
+  color: var(--wire-addr);
+}
+.tabela-falhas .falha {
+  color: var(--wire-control);
+}
+
+/* quiz */
+.quiz {
+  display: grid;
+  gap: 0.8rem;
+}
+.quiz-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.quiz-topo p {
+  margin: 0.2rem 0 0;
+}
+.placar {
+  font-size: 1rem;
+}
+.quiz-instr .instr-asm {
+  font-size: 1.4rem;
+}
+.quiz-sinais {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 0.4rem;
+}
+.quiz-sinal {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem 0.5rem;
+  background: var(--surface);
+  display: grid;
+  gap: 0.3rem;
+}
+.quiz-sinal legend {
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0 0.2rem;
+  color: var(--wire-control);
+}
+.quiz-certo {
+  border-color: var(--wire-addr);
+  background: color-mix(in srgb, var(--wire-addr) 10%, var(--surface));
+}
+.quiz-errado {
+  border-color: var(--wire-control);
+  background: color-mix(in srgb, var(--wire-control) 10%, var(--surface));
+}
+.quiz-marca {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.quiz-certo .quiz-marca {
+  color: var(--wire-addr);
+}
+.quiz-errado .quiz-marca {
+  color: var(--wire-control);
+}
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+}
+.seg-btn {
+  flex: 1 1 auto;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  margin-left: -1px;
+}
+.seg-btn:first-child {
+  border-radius: 6px 0 0 6px;
+  margin-left: 0;
+}
+.seg-btn:last-child {
+  border-radius: 0 6px 6px 0;
+}
+.seg-on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  position: relative;
+}
+.quiz-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.quiz-digitar {
+  display: flex;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+.quiz-digitar input {
+  font-size: 0.95rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  width: 14rem;
+}
+.quiz-feedback {
+  display: grid;
+  gap: 0.5rem;
+}
+.quiz-ok {
+  font-weight: 700;
+  color: var(--wire-addr);
+  margin: 0;
+}
+.quiz-erros,
+.quiz-xs {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+}
+.quiz-ver {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* falhas */
+.falha-controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: flex-end;
+}
+.falha-controles select {
+  font-size: 0.95rem;
+}
+.falha-pergunta {
+  font-size: 1.2rem !important;
+}
+
+/* codificação */
+.cod-resumo {
+  margin: 0 0 0.4rem;
+}
+.cod-campos {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.cod-campo {
+  display: grid;
+  justify-items: center;
+  padding: 0.3rem 0.2rem;
+  color: var(--campo-text);
+  border-right: 1px solid rgb(0 0 0 / 0.25);
+  min-width: 0;
+  cursor: default;
+}
+.cod-campo:last-child {
+  border-right: none;
+}
+.cod-foco {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+.cod-nome {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.cod-bin {
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.cod-idx {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+.cod-dec {
+  font-size: 0.85rem;
+}
+.cod-nibbles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+.nibble {
+  display: grid;
+  justify-items: center;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+.nib-hex {
+  font-weight: 700;
+  color: var(--accent);
+}
+.cod-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+.cod-passos {
+  margin: 0;
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+}
+.cod-passos li:hover {
+  background: var(--read-bg);
+}
+.calcs {
+  display: grid;
+  gap: 0.8rem;
+}
+.calc {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  background: var(--surface);
+}
+.calc h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+.calc-entradas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+.calc-passos {
+  margin: 0.5rem 0 0;
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .cod-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .quiz-digitar {
+    margin-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  .cod-campos {
+    flex-wrap: wrap;
+  }
+  .cod-bin {
+    font-size: 0.85rem;
+  }
+}
+
+.rolavel {
+  min-width: 0;
+  overflow-x: auto;
+}
+.pagina-modulo > * {
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .rolavel .datapath {
+    min-width: 720px;
+  }
+}

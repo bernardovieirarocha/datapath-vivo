@@ -281,6 +281,14 @@ export function Explorar({ inicial }: Props) {
                 )}
                 <li>PC ← {formatar(wr.pc.after, 32, 'endereco', formato)}</li>
               </ul>
+              <p className="links-cruzados">
+                <a href={`#/m3?i=${encodeURIComponent(instr.texto)}`}>
+                  Testar-se: quiz de sinais desta instrução →
+                </a>
+                <a href={`#/m4?i=${encodeURIComponent(instr.texto)}`}>
+                  Ver a codificação em bits →
+                </a>
+              </p>
               <details className="sinais-detalhe">
                 <summary>Tabela dos sinais de controle</summary>
                 <Sinais snapshot={snapshot} />
