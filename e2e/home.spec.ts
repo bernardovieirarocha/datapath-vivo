@@ -7,5 +7,7 @@ test('página inicial: M1 abre, os outros módulos ainda estão desabilitados', 
   await expect(nav.getByRole('button')).toHaveCount(7);
   for (const botao of await nav.getByRole('button').all()) await expect(botao).toBeDisabled();
   await nav.getByRole('link', { name: /M1/ }).click();
+  await expect(page.getByRole('textbox', { name: 'Digite uma instrução' })).toBeVisible();
+  await page.getByRole('link', { name: 'Programa passo a passo' }).click();
   await expect(page.getByTestId('ciclo')).toHaveText('Ciclo 1');
 });

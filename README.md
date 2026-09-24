@@ -6,7 +6,7 @@ O aluno vê o datapath **dos slides** funcionando: fios acendendo, valores em ca
 
 ## Estado atual
 
-Fases 0–3 concluídas: core (bits, ISA/montador, simulador monociclo com golden trace verde) e o **modo Execução (M1)** com o datapath do slide em SVG. Rode `npm run dev` e abra `#/m1`. Próximo passo: **Fase 4** (`docs/prompts/fase-04-controle-quiz-e-injecao-de-falhas-m3-cod.md`).
+Fases 0–3 concluídas: core (bits, ISA/montador, simulador monociclo com golden trace verde) e o **M1**: digite qualquer instrução e veja o caminho dela no datapath do slide (`#/m1`), ou rode um programa ciclo a ciclo (`#/m1/programa`). Rode `npm run dev`. Próximo passo: **Fase 4** (`docs/prompts/fase-04-controle-quiz-e-injecao-de-falhas-m3-cod.md`).
 
 ## Mapa do repositório
 

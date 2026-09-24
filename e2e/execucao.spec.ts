@@ -3,7 +3,7 @@ import golden from '../reference/golden_trace_pratica10.json' with { type: 'json
 
 const reg = (page: Page, n: number) => page.locator(`[data-reg="${n}"] .reg-atual`);
 
-async function abrir(page: Page, hash = '#/m1') {
+async function abrir(page: Page, hash = '#/m1/programa') {
   await page.goto(`/${hash}`);
   await expect(page.getByTestId('ciclo')).toHaveText('Ciclo 1');
 }
@@ -104,7 +104,7 @@ test('editor: erro em português com a linha; programa novo; link compartilháve
 
   // o link da barra de endereço reabre o mesmo programa numa aba nova
   const url = page.url();
-  expect(url).toMatch(/#\/m1\?p=/);
+  expect(url).toMatch(/#\/m1\/programa\?p=/);
   const outra = await page.context().newPage();
   await outra.goto(url);
   await expect(outra.locator('.instr-asm')).toHaveText('add $8, $17, $18');

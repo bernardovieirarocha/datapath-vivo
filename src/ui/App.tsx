@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
 import { MODULOS } from '../content/modulos';
 import { Execucao } from './modes/execucao/Execucao';
-import { lerRota, type Pagina } from './rota';
+import { Explorar } from './modes/explorar/Explorar';
+import { lerRota, type Rota } from './rota';
 import { TemaToggle } from './TemaToggle';
 
 /** Módulos já implementados → rota. */
 const ROTAS: Partial<Record<string, string>> = { M1: '#/m1' };
 
 export function App() {
-  const [pagina, setPagina] = useState<Pagina>(() => lerRota(location.hash));
+  const [rota, setRota] = useState<Rota>(() => lerRota(location.hash));
   useEffect(() => {
-    const onHash = () => setPagina(lerRota(location.hash));
+    const onHash = () => setRota(lerRota(location.hash));
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  if (pagina === 'm1') return <Execucao />;
+  if (rota.pagina === 'programa') return <Execucao />;
+  if (rota.pagina === 'instrucao') return <Explorar inicial={rota.instrucao} />;
 
   return (
     <main className="home">

@@ -201,7 +201,18 @@ Pegadinha boa para aula: no `j` (ciclo 5), a ULA calcula `$0 + $0 = 0` e o Zero 
 
 ## 5. Módulos (funcionalidades)
 
-### M1 — Execução passo a passo (o coração)
+### M1 — Explorar o datapath (o coração)
+
+Duas telas, em abas:
+
+**Uma instrução** (padrão, `#/m1`): o aluno digita **qualquer instrução** da aula (ou os 32 bits em hex) e vê na hora o caminho dela no datapath. Monta a cada tecla, com erro em português e mantendo a última instrução válida na tela.
+- Campos coloridos da instrução.
+- Valores editáveis só do que a instrução usa: PC, `$rs`, `$rt` e, no lw, a palavra da memória no endereço calculado. Mudou o valor, mudam os fios.
+- "O que acontece" em 5 etapas (busca → escrita), gerado com os valores reais (`src/content/narracao.ts`). Clicar numa etapa, ou usar ← →, mostra o datapath só até ali.
+- Resultado da borda (`$8 ← 42`, `PC ← 16`) e link compartilhável `#/m1?i=<instrução>`.
+
+**Programa passo a passo** (`#/m1/programa`): o modo descrito abaixo.
+
 
 - Datapath monociclo completo em SVG, com o layout clássico do slide (PC à esquerda, memória de instruções, banco de registradores ao centro, ULA, memória de dados, mux de write-back à direita, controle em cima com linhas de controle em vermelho/azul).
 - Controles: Reset · Passo (1 ciclo) · Voltar (1 ciclo — histórico completo de estados) · Rodar (velocidade ajustável) · Pausar · Ir para ciclo N · Breakpoint por PC.

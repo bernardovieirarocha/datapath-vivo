@@ -9,6 +9,7 @@ import { MemoriaDados } from '../../panels/MemoriaDados';
 import { MemoriaInstrucoes } from '../../panels/MemoriaInstrucoes';
 import { Registradores } from '../../panels/Registradores';
 import { Sinais } from '../../panels/Sinais';
+import { ModoTabs } from '../../ModoTabs';
 import { TemaToggle } from '../../TemaToggle';
 import { encodeCompartilhado } from './link';
 import { atual, NUM_FASES, useExecucao } from './store';
@@ -25,7 +26,7 @@ const ABAS: { id: Aba; nome: string }[] = [
 
 function linkAtual(programa: string, estado: string): string {
   const base = `${location.origin}${location.pathname}${location.search}`;
-  return `${base}#/m1?p=${encodeCompartilhado({ programa, estado })}`;
+  return `${base}#/m1/programa?p=${encodeCompartilhado({ programa, estado })}`;
 }
 
 export function Execucao() {
@@ -119,7 +120,7 @@ export function Execucao() {
         <a href="#/" className="marca">
           Datapath Vivo
         </a>
-        <h1>Execução passo a passo</h1>
+        <ModoTabs atual="programa" />
         <div className="controles" role="toolbar" aria-label="Controles da simulação">
           <button
             type="button"

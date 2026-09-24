@@ -147,3 +147,17 @@ A ferramenta passa a ser **apoio à disciplina teórica AOC1**. A fonte da verda
 - Botão "Prever" (princípio 1 do plano) e atalho `P`: não estavam no prompt da Fase 3. Ficam para a Fase 4, junto com o quiz, ou para a Fase 9.
 - Atalhos `1..9` para trocar de módulo: só existe o M1 por enquanto.
 - Narração textual por ciclo e Modo Aula: Fase 9.
+
+## M1: "Explorar instrução" — set/2026
+
+Pedido da monitoria: algo mais interativo, em que o aluno coloca **qualquer instrução** e vê o datapath dela, sem precisar montar um programa.
+
+**Pronto**
+- Nova tela padrão do M1 (`#/m1`, `src/ui/modes/explorar/`). O "programa passo a passo" virou a segunda aba (`#/m1/programa`); links antigos `#/m1?p=` continuam abrindo o programa.
+- **Campo de instrução ao vivo**: Assembly ou hex, monta a cada tecla. Erros em português, com dica quando o aluno tenta usar rótulo, e a última instrução válida continua na tela. Botões de atalho para as 10 instruções da aula.
+- **Valores editáveis** só do que a instrução usa: PC, `$rs`, `$rt`; no lw, `M[endereço]`. Campos para `$0` não aparecem. Aceita decimal com sinal, 0x… e 0b…. Valores padrão: `$n = 4n` e `M[a] = 1000 + a`, pequenos e alinhados, para os números nos fios serem fáceis de seguir.
+- **"O que acontece"** (`src/content/narracao.ts`): 5 etapas geradas a partir do snapshot, com os valores reais. Exemplos: "A ULA soma a base e o deslocamento: 68 + 8 = 76", "Branch · Zero = 1: o desvio é tomado", "o banco sempre lê os dois, mas aqui o Read data 2 não é usado". Clicar numa etapa, ou usar `←`/`→`, mostra o datapath só até ali; `Esc` volta ao ciclo inteiro.
+- **Resultado da borda** (`$8 ← 1076`, `M[76] ← 32`, `PC ← 16`), tabela de sinais, clique no bloco para a explicação, hex/dec, tema.
+- Link compartilhável da instrução: `#/m1?i=lw%20$8,%208($17)`.
+- Testes: 9 de unidade (leitura da instrução, valores, montagem do estado, narração de R/lw/sw/beq/j/addi/slt/$0/opcode desconhecido) e 6 e2e (caminho muda ao digitar, valores mudam fios, explicação e resultado, beq tomado × não tomado, etapas, erro e hex, link). Total: 321 de unidade e 14 e2e.
+- Conferido em capturas de tela no claro, no escuro e em 390 px.

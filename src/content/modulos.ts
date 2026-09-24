@@ -12,8 +12,8 @@ export interface Modulo {
 export const MODULOS: readonly Modulo[] = [
   {
     id: 'M1',
-    titulo: 'Execução passo a passo',
-    resumo: 'O datapath monociclo da aula rodando, ciclo a ciclo.',
+    titulo: 'Explorar o datapath',
+    resumo: 'Digite qualquer instrução e veja o caminho dela; ou rode um programa ciclo a ciclo.',
     fase: 3,
   },
   {

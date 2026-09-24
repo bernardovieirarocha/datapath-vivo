@@ -694,3 +694,191 @@ a.modulo {
     min-width: 720px;
   }
 }
+
+/* ---------- abas de modo (M1) ---------- */
+.modo-tabs {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.modo-tabs a {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--text-muted);
+}
+.modo-tabs a + a {
+  border-left: 1px solid var(--border);
+}
+.modo-tabs a[aria-current='page'] {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+/* ---------- Explorar instrução ---------- */
+.entrada-instr {
+  display: grid;
+  gap: 0.35rem;
+}
+.entrada-instr label {
+  font-weight: 600;
+}
+.entrada-instr input {
+  font-size: 1.4rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+  max-width: 34rem;
+}
+.entrada-instr input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+input.invalida,
+.entrada-instr input.invalida {
+  border-color: var(--wire-control);
+}
+.entrada-instr p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+.erro-instr {
+  color: var(--wire-control);
+}
+.atalhos-instr,
+.fases-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
+.fases-nav {
+  margin-top: 0.6rem;
+}
+.dica {
+  font-size: 0.8rem;
+  margin-left: 0.3rem;
+}
+.chip-btn {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.chip-btn:hover {
+  border-color: var(--accent);
+}
+.chip-btn-on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.explorar .status-ciclo {
+  margin-top: 0.6rem;
+}
+.valores {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+.valores-titulo {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.campo-valor {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+}
+.campo-valor input {
+  width: 7.5rem;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+}
+.painel-titulo {
+  font-size: 0.9rem;
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.painel-titulo + .resultado,
+.narracao + .painel-titulo {
+  margin-top: 0.8rem;
+}
+.narracao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.narracao > li {
+  border-left: 3px solid var(--border);
+  padding-left: 0.6rem;
+}
+.narracao > li.etapa-atual {
+  border-left-color: var(--accent);
+  background: var(--read-bg);
+  border-radius: 0 6px 6px 0;
+}
+.narracao > li.etapa-futura {
+  opacity: 0.45;
+}
+.etapa-titulo {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.narracao ul {
+  margin: 0.2rem 0 0.2rem;
+  padding-left: 1rem;
+  font-size: 0.86rem;
+}
+.resultado {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: var(--write-bg);
+  border: 1px solid var(--write);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.sinais-detalhe {
+  margin-top: 0.8rem;
+  font-size: 0.88rem;
+}
+.sinais-detalhe summary {
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+}
+@media (max-width: 640px) {
+  .entrada-instr input {
+    font-size: 1.1rem;
+  }
+}
