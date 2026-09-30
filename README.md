@@ -1,37 +1,46 @@
 # Datapath Vivo
 
-Ferramenta web interativa do caminho de dados MIPS (monociclo e multiciclo), **de apoio à disciplina teórica AOC1 — CEFET-MG** (Prof.ª Poliana Corrêa). Projeto da monitoria.
+Digite uma instrução MIPS e veja o caminho dela no **datapath monociclo**, inteiro ou etapa por etapa.
 
-O aluno vê o datapath **dos slides** funcionando: fios acendendo, valores em cada barramento, sinais de controle mudando a cada instrução, caminho crítico, monociclo × multiciclo e exercícios corrigidos pelo próprio simulador.
+Ferramenta de apoio à disciplina teórica **AOC1 — CEFET-MG** (Prof.ª Poliana Corrêa), feita pela monitoria. O datapath, as tabelas e o vocabulário seguem os slides das Aulas 04, 06 e 07 (Patterson & Hennessy, cap. 4).
 
-## Estado atual
+**Site:** https://bernardovieirarocha.github.io/datapath-vivo/
 
-Fases 0–4 concluídas. Rode `npm run dev`:
-- `#/m1`: digite qualquer instrução e veja o caminho dela no datapath do slide; ou rode um programa ciclo a ciclo (`#/m1/programa`).
-- `#/m3`: quiz de sinais de controle, tabelas e "e se o sinal X travar?".
-- `#/m4`: codificação/decodificação em bits e calculadoras de desvio/salto.
+## O que dá para fazer (v0.1)
 
-Próximo passo: **Fase 6** (timing e caminho crítico, `docs/prompts/fase-06-timing-e-caminho-critico-m5.md`). A Fase 5 (placa) saiu na v2.
+- **Escrever qualquer instrução** da aula (add, sub, and, or, slt, addi, lw, sw, beq, j) em Assembly, hex ou binário. O caminho acende enquanto você digita.
+- **Ver o ciclo inteiro ou uma etapa de cada vez** (busca → decodificação → execução → memória → escrita), com ◀ ▶ ou "Animar".
+- **Mudar os valores** dos registradores e da memória que a instrução usa e ver os números mudarem nos fios.
+- **Entender os detalhes** nas abas ao lado:
+  - *O que acontece*: a explicação de cada etapa com os valores reais e o resultado na borda do clock.
+  - *Sinais*: os 9 sinais de controle, com o que cada um faz e os don't cares do slide.
+  - *Bits*: os 32 bits por campo e a decodificação passo a passo.
+- **Clicar num bloco** para ver o que ele faz, as entradas e saídas e a página do slide.
+- **Compartilhar** uma instrução pelo link da barra de endereço.
 
-## Mapa do repositório
+## Rodar na sua máquina
+
+```bash
+npm install
+npm run dev        # abre em http://localhost:5173
+```
+
+Outros comandos: `npm test` (testes de unidade), `npm run test:e2e` (testes no navegador), `npm run lint`, `npm run build`.
+
+## Como é feito
+
+Vite + React 18 + TypeScript. Sem backend.
 
 | Caminho | O que é |
 |---|---|
-| `CLAUDE.md` | Contexto e regras que o Claude Code lê em toda sessão |
-| `docs/PLANO.md` | Plano mestre: objetivos, especificação do datapath, módulos, arquitetura, testes, fases |
-| `docs/prompts/` | Um prompt pronto por fase, com critério de aceite |
-| `docs/DUVIDAS.md` | Pontos para confirmar com a professora |
-| `docs/CHANGELOG.md` | Registro do que cada fase entregou |
-| `docs/ref/` | Slides das aulas 04, 06 e 07 + imagens de referência do layout — **fonte da verdade** |
-| `reference/golden_trace_pratica10.json` | 22 ciclos do programa de exemplo com o valor de todos os fios (teste obrigatório) |
-| `reference/pratica10/`, `tools/golden/` | Verilog do lab e script que gerou o golden trace — só registro histórico |
+| `src/core/` | O simulador: TypeScript puro, sem interface. O datapath é uma lista declarativa de blocos e fios (`src/core/mono/datapath.ts`). |
+| `src/ui/` | A interface. O desenho do datapath é SVG escrito à mão, com os mesmos nomes de fio do simulador. |
+| `src/content/` | Os textos didáticos, separados do código, com a aula e a página do slide de cada explicação. |
+| `reference/golden_trace_pratica10.json` | 22 ciclos de um programa de exemplo com o valor de todos os fios. É o teste de regressão do simulador. |
+| `docs/PLANO.md` | O plano do projeto. `docs/CHANGELOG.md` registra o que cada etapa entregou. |
 
-## Como trabalhar
+Os slides das aulas não ficam neste repositório.
 
-1. Abra o Claude Code na raiz desta pasta.
-2. Cole o prompt da fase atual (`docs/prompts/fase-XX-*.md`).
-3. Só avance quando o critério de aceite da fase estiver cumprido e o `CHANGELOG` atualizado.
+## Estado
 
-## Stack
-
-Vite + React 18 + TypeScript strict · Zustand · SVG à mão · Vitest · Playwright · GitHub Pages. Sem backend.
+Versão inicial, para validar com a professora. Já existem no código, fora do ar, um modo de programa passo a passo, um quiz de sinais de controle, injeção de falhas e uma tela de codificação; a ordem do que volta sai dessa conversa (ver `docs/PLANO.md`).

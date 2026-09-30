@@ -4,6 +4,10 @@ Ferramenta web didática e interativa do caminho de dados MIPS (monociclo e mult
 
 O plano completo, com as fases e os critérios de aceite, está em `docs/PLANO.md`. Leia antes de qualquer tarefa grande e siga a fase pedida, sem adiantar as próximas.
 
+**Estado: v0.1.** Está no ar só a tela da instrução (`src/ui/modes/explorar/`). Programa passo a passo, quiz, falhas e codificação existem no código mas não têm rota. **Não construa nem reative módulo nenhum antes do retorno da professora** (`docs/PLANO.md`, "Versão 0.1", e `docs/REUNIAO.md`).
+
+Os slides (`docs/ref/`) e o Verilog da prática (`reference/pratica10/`) ficam só na máquina do Bernardo, fora do git: o repositório é público. Se não estiverem na pasta, peça a ele.
+
 ## Regras inegociáveis
 
 1. **Fidelidade aos slides.** O datapath, as tabelas e o vocabulário são os das Aulas 04, 06 e 07 (`docs/ref/`). Em qualquer dúvida de comportamento, os slides mandam, depois `docs/PLANO.md` Seção 2, depois o livro (Patterson & Hennessy, cap. 4). O Verilog da Prática 10 (`reference/pratica10/`) **não** é referência.

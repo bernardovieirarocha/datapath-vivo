@@ -202,3 +202,37 @@ Pedido da monitoria: algo mais interativo, em que o aluno coloca **qualquer inst
 **Pendente**
 - Visão em portas (PLA) do controle, do slide "Solução em hardware de controle" (Aula 06, p. 35): o slide é só imagem, não deu para extrair as portas com fidelidade. Fica para a Fase 9, junto com a revisão de conteúdo.
 - Injeção de falhas também no "Programa passo a passo" (rodar o programa inteiro com o sinal travado): o "E se?" já mostra por classe de instrução. Fica como ideia.
+
+## v0.1 — versão inicial para a professora ver — set/2026
+
+O projeto andou mais rápido que a validação. A v0.1 reduz o que está no ar a **uma tela só** e publica, para a professora reagir antes de qualquer módulo novo.
+
+**No ar**
+- **Tela única** (`src/ui/modes/explorar/`), sem página inicial e sem ids de módulo:
+  - instrução ao vivo (Assembly, hex ou binário), com 10 exemplos em botões curtos (`add`, `lw`, `beq`, `j`…) que cabem numa linha;
+  - valores editáveis só do que a instrução usa;
+  - etapas: "Ciclo inteiro", ◀ ▶, as 5 etapas e **Animar** (percorre as etapas sozinho, 1,5 s cada, e para na escrita); a etapa atual aparece descrita logo abaixo do datapath;
+  - auxiliares em abas: **O que acontece** (explicação + resultado da borda), **Sinais** (agora com o texto do slide de cada sinal visível, não só no tooltip) e **Bits** (campos, valores e decodificação passo a passo; o mouse num campo acende os fios dele);
+  - clique num bloco para a explicação e a página do slide;
+  - **ajuda de primeira visita** em 3 passos, dispensável, que reabre no "?" (localStorage com try/catch);
+  - rodapé com os créditos e a versão.
+- Link canônico `#/?i=<instrução>`. Links antigos `#/m1?i=` continuam valendo, e qualquer outro hash cai na tela.
+- `index.html`: título e descrição novos, favicon e `theme-color`.
+- O datapath cabe inteiro em 1920×1080 e em 1440×900. Em telas de 768 ou 720 px de altura é preciso rolar 60–70 px; preferi isso a encolher o texto do desenho.
+
+**Fora do ar, guardado**
+- Programa passo a passo, quiz, tabelas, falhas e codificação (`src/ui/modes/execucao|controle|codificacao`, `src/core/faults`). Compilam e os testes de unidade rodam. Os e2e foram para `e2e/fora-da-v0.1/` (ignorados pelo Playwright), com instruções para reativar.
+- Saíram `src/content/modulos.ts` e `src/ui/ModoTabs.tsx` (só a página inicial e as abas de modo usavam).
+
+**Repositório público**
+- `docs/ref/` (slides da professora) e `reference/pratica10/` (Verilog da prática, que seria o gabarito do LAOC1) saíram do git e do histórico. Continuam na máquina, no `.gitignore`. Nenhum teste dependia deles.
+- README reescrito para quem chega de fora.
+
+**Processo**
+- `docs/PLANO.md` ganhou a seção "Versão 0.1", com a regra de não construir módulo novo antes do retorno da professora.
+- Novo `docs/REUNIAO.md`: o que mostrar em 5 minutos e o que perguntar.
+
+**Corrigido no caminho**
+- No painel Bits, o imediato de uma instrução tipo I acendia também o fio `Instruction [25–0]` (que é do jump). Agora o tipo I acende só `[15–0]` e o `j` só `[25–0]`. A tela de codificação (fora do ar) ainda tem esse defeito.
+
+**Testes**: 348 de unidade, 11 e2e da tela única.

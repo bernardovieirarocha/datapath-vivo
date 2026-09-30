@@ -1262,3 +1262,199 @@ input.invalida,
     min-width: 720px;
   }
 }
+
+/* ---------- v0.1: tela única ---------- */
+.subtitulo-barra {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.ajuda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--read-bg);
+  border-bottom: 1px solid var(--border);
+}
+.ajuda ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.5rem 1.5rem;
+  flex: 1 1 30rem;
+}
+.ajuda li {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.88rem;
+}
+.topo-instr {
+  display: grid;
+  grid-template-columns: minmax(15rem, 26rem) minmax(0, 1fr);
+  gap: 0.5rem 1.25rem;
+  align-items: end;
+}
+.topo-instr .entrada-instr input {
+  max-width: none;
+  font-size: 1.25rem;
+  padding: 0.4rem 0.65rem;
+}
+.explorar .status-ciclo {
+  margin-top: 0;
+  padding-bottom: 0.2rem;
+}
+.explorar .atalhos-instr {
+  margin-top: 0.45rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  font-size: 0.8rem;
+}
+.explorar .atalhos-instr .chip-btn {
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.linha-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+.linha-controles .valores {
+  margin-top: 0;
+  padding: 0.3rem 0.6rem;
+}
+.linha-controles .fases-nav {
+  margin-top: 0;
+}
+.campo-valor input {
+  width: 6rem;
+}
+.chip-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn-animar {
+  font-size: 0.82rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+.explorar .fase-desc {
+  margin: 0.4rem 0 0;
+  padding: 0.4rem 0.7rem;
+  border-left: 3px solid var(--accent);
+  background: var(--read-bg);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.92rem;
+}
+.creditos {
+  padding: 0.75rem 1rem 1.25rem;
+  font-size: 0.8rem;
+  text-align: center;
+}
+.sinais td {
+  vertical-align: top;
+}
+.sinal-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.sinais .chip-x {
+  margin-left: 0.35rem;
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+.bits-campos {
+  list-style: none;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+}
+.bits-campo {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: var(--campo-text);
+  font-size: 0.85rem;
+  cursor: default;
+}
+.bits-campo:hover,
+.bits-campo:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -1px;
+}
+.bits-nome {
+  font-weight: 700;
+}
+.bits-nome small {
+  font-weight: 400;
+}
+.bits-bin {
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+}
+.painel-bits .cod-passos {
+  font-size: 0.86rem;
+}
+@media (max-width: 1000px) {
+  .topo-instr {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .subtitulo-barra {
+    display: none;
+  }
+}
+
+.topo-instr .entrada-instr {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.topo-instr {
+  align-items: center;
+  grid-template-columns: minmax(17rem, 27rem) minmax(0, 1fr);
+}
+.explorar .atalhos-instr {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+.explorar .execucao-corpo {
+  padding-top: 0.6rem;
+}
+
+.explorar .barra {
+  padding: 0.4rem 1rem;
+}
+.explorar .execucao-corpo {
+  padding-top: 0.45rem;
+}
+.explorar .atalhos-instr {
+  margin-top: 0.3rem;
+}
+.linha-controles {
+  margin-top: 0.35rem;
+  gap: 0.35rem 1rem;
+}
+.linha-controles .valores {
+  padding: 0.2rem 0.55rem;
+}
+.explorar .datapath {
+  margin-top: 0.35rem;
+}
+/* O datapath nunca passa da janela em telas grandes (projetor); o piso evita texto miúdo. */
+@media (min-width: 1001px) {
+  .explorar .datapath {
+    max-height: max(590px, calc(100vh - 228px));
+  }
+}

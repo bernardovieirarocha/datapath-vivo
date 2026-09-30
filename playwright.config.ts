@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
+  // Telas fora do ar na v0.1 (ver e2e/fora-da-v0.1/README.md).
+  testIgnore: '**/fora-da-v0.1/**',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

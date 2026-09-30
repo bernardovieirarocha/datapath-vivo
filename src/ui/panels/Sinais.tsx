@@ -18,14 +18,12 @@ export function Sinais({ snapshot }: { snapshot: Snapshot }) {
             const v = w[s]!;
             const x = xs.includes(s);
             return (
-              <tr key={s} title={SINAIS[s]}>
+              <tr key={s}>
                 <th scope="row" className="mono">
                   {s}
                 </th>
                 <td className={`mono sinal-${v ? 'on' : 'off'}`}>
                   {s === 'ALUOp' ? bin(v, 2) : v}
-                </td>
-                <td>
                   {x && (
                     <span
                       className="chip chip-x"
@@ -35,15 +33,19 @@ export function Sinais({ snapshot }: { snapshot: Snapshot }) {
                     </span>
                   )}
                 </td>
+                <td className="sinal-desc">{SINAIS[s]}</td>
               </tr>
             );
           })}
-          <tr title="Linhas de controle da ULA (3 bits), geradas por ALUOp e funct">
+          <tr>
             <th scope="row" className="mono">
               Controle da ULA
             </th>
             <td className="mono">{bin(w['alu_ctl']!, 3)}</td>
-            <td />
+            <td className="sinal-desc">
+              3 linhas geradas por ALUOp e funct: 000 and · 001 or · 010 soma · 110 subtração · 111
+              slt.
+            </td>
           </tr>
         </tbody>
       </table>

@@ -1,25 +1,37 @@
 import { useEffect, useMemo, useState } from 'react';
 import { computeActivity, inDmem, MONO_NETLIST, step, wordAddress } from '../../../core/mono';
+import { CREDITOS, SUBTITULO, VERSAO } from '../../../content/ajuda';
 import { narrar } from '../../../content/narracao';
 import { textoAlerta } from '../../../content/textos';
+import { Ajuda } from '../../Ajuda';
+import { ajudaJaVista, marcarAjudaVista } from '../../ajudaVista';
 import { Datapath } from '../../datapath/Datapath';
 import { formatar, type Formato } from '../../format';
+import { Bits } from '../../panels/Bits';
 import { InfoBloco } from '../../panels/InfoBloco';
 import { InstrucaoAtual } from '../../panels/InstrucaoAtual';
 import { Sinais } from '../../panels/Sinais';
-import { ModoTabs } from '../../ModoTabs';
 import { TemaToggle } from '../../TemaToggle';
 import { ATALHOS, lerInstrucao, lerValor, montarEstado } from './estado';
 
 const WIRE = new Map(MONO_NETLIST.wires.map((w) => [w.id, w]));
 const NUM_FASES = 5;
+/** Tempo em cada etapa no "Animar". */
+const MS_POR_ETAPA = 1500;
+
+type Aba = 'acontece' | 'sinais' | 'bits';
+const ABAS: readonly { id: Aba; nome: string }[] = [
+  { id: 'acontece', nome: 'O que acontece' },
+  { id: 'sinais', nome: 'Sinais' },
+  { id: 'bits', nome: 'Bits' },
+];
 
 interface Props {
   /** Instrução inicial (vinda do link). */
   inicial?: string;
 }
 
-/** "Explorar instrução": o aluno digita uma instrução e vê o datapath dela na hora. */
+/** A tela do Datapath Vivo: o aluno digita uma instrução e vê o datapath dela na hora. */
 export function Explorar({ inicial }: Props) {
   const [texto, setTexto] = useState(inicial ?? ATALHOS[6]!);
   const [ultimaValida, setUltimaValida] = useState(() => {
@@ -30,8 +42,12 @@ export function Explorar({ inicial }: Props) {
   const [regs, setRegs] = useState<Record<number, number>>({});
   const [mem, setMem] = useState<Record<number, number>>({});
   const [fase, setFase] = useState<number | null>(null); // null = ciclo inteiro
+  const [animando, setAnimando] = useState(false);
   const [formato, setFormato] = useState<Formato>('dec');
   const [selecionado, setSelecionado] = useState<string | null>(null);
+  const [aba, setAba] = useState<Aba>('acontece');
+  const [fiosFoco, setFiosFoco] = useState<readonly string[]>([]);
+  const [ajuda, setAjuda] = useState(() => !ajudaJaVista());
 
   const lido = useMemo(() => lerInstrucao(texto), [texto]);
   const mudarTexto = (t: string) => {
@@ -55,14 +71,32 @@ export function Explorar({ inicial }: Props) {
   };
   const etapas = narrar(snapshot, v);
   const faseVisivel = fase ?? NUM_FASES;
+  const destaque = useMemo(() => new Set(fiosFoco), [fiosFoco]);
+
+  /** Escolher uma etapa à mão para a animação. */
+  const irParaFase = (f: number | null) => {
+    setAnimando(false);
+    setFase(f);
+  };
 
   // Link compartilhável da instrução.
   useEffect(() => {
     if (lido.ok) {
-      const url = `${location.pathname}${location.search}#/m1?i=${encodeURIComponent(texto.trim())}`;
+      const url = `${location.pathname}${location.search}#/?i=${encodeURIComponent(texto.trim())}`;
       window.history.replaceState(null, '', url);
     }
   }, [lido.ok, texto]);
+
+  // Animar: uma etapa de cada vez, da busca à escrita, e para.
+  useEffect(() => {
+    if (!animando) return;
+    const t = setTimeout(() => {
+      if (fase === null) setFase(1);
+      else if (fase < NUM_FASES) setFase(fase + 1);
+      else setAnimando(false);
+    }, MS_POR_ETAPA);
+    return () => clearTimeout(t);
+  }, [animando, fase]);
 
   // ← → andam pelas etapas; Esc volta ao ciclo inteiro / fecha a explicação; H hex/dec.
   useEffect(() => {
@@ -70,9 +104,14 @@ export function Explorar({ inicial }: Props) {
       const alvo = e.target as HTMLElement | null;
       if (alvo && /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName)) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key === 'ArrowRight') setFase((f) => (f === null ? 1 : Math.min(NUM_FASES, f + 1)));
-      else if (e.key === 'ArrowLeft') setFase((f) => (f === null ? NUM_FASES : Math.max(1, f - 1)));
-      else if (e.key === 'Escape') {
+      if (e.key === 'ArrowRight') {
+        setAnimando(false);
+        setFase((f) => (f === null ? 1 : Math.min(NUM_FASES, f + 1)));
+      } else if (e.key === 'ArrowLeft') {
+        setAnimando(false);
+        setFase((f) => (f === null ? NUM_FASES : Math.max(1, f - 1)));
+      } else if (e.key === 'Escape') {
+        setAnimando(false);
         setSelecionado(null);
         setFase(null);
       } else if (e.key === 'h' || e.key === 'H') setFormato((f) => (f === 'dec' ? 'hex' : 'dec'));
@@ -89,8 +128,8 @@ export function Explorar({ inicial }: Props) {
   const endereco = wordAddress(w['alu_result']!);
   const usaMem = w['MemRead'] === 1 && inDmem(w['alu_result']!);
   const valorReg = (n: number) => estado.regs[n]!;
-
   const wr = snapshot.writes;
+  const etapaAtual = fase === null ? undefined : etapas[fase - 1];
 
   return (
     <div className="execucao explorar">
@@ -98,7 +137,7 @@ export function Explorar({ inicial }: Props) {
         <a href="#/" className="marca">
           Datapath Vivo
         </a>
-        <ModoTabs atual="instrucao" />
+        <p className="subtitulo-barra">{SUBTITULO}</p>
         <div className="opcoes">
           <label className="toggle">
             <input
@@ -109,108 +148,160 @@ export function Explorar({ inicial }: Props) {
             Hex <kbd>H</kbd>
           </label>
           <TemaToggle />
+          <button
+            type="button"
+            className="btn btn-icone"
+            aria-label="Como usar"
+            aria-expanded={ajuda}
+            onClick={() => setAjuda((a) => !a)}
+          >
+            ?
+          </button>
         </div>
       </header>
 
+      {ajuda && (
+        <Ajuda
+          onFechar={() => {
+            marcarAjudaVista();
+            setAjuda(false);
+          }}
+        />
+      )}
+
       <main className="execucao-corpo">
         <section className="palco" aria-label="Instrução e datapath">
-          <div className="entrada-instr">
-            <label htmlFor="instrucao">Digite uma instrução</label>
-            <input
-              id="instrucao"
-              className={`mono ${lido.ok ? '' : 'invalida'}`}
-              value={texto}
-              onChange={(e) => mudarTexto(e.target.value)}
-              spellCheck={false}
-              autoComplete="off"
-              aria-invalid={!lido.ok}
-              aria-describedby="instr-msg"
-              placeholder="ex.: lw $t0, 8($s1)  ou  0x8E280008"
-            />
-            <p
-              id="instr-msg"
-              className={lido.ok ? 'muted' : 'erro-instr'}
-              role={lido.ok ? undefined : 'alert'}
-            >
-              {lido.ok
-                ? 'Assembly (add, sub, and, or, slt, addi, lw, sw, beq, j) ou os 32 bits em hex.'
-                : `${lido.erro} Mostrando a última instrução válida: ${ultimaValida.texto}.`}
-            </p>
-            <div className="atalhos-instr" role="group" aria-label="Exemplos">
-              {ATALHOS.map((a) => (
-                <button
-                  key={a}
-                  type="button"
-                  className={`chip-btn mono ${texto.trim() === a ? 'chip-btn-on' : ''}`}
-                  onClick={() => mudarTexto(a)}
-                >
-                  {a}
-                </button>
-              ))}
+          <div className="topo-instr">
+            <div className="entrada-instr">
+              <label htmlFor="instrucao">Instrução</label>
+              <input
+                id="instrucao"
+                className={`mono ${lido.ok ? '' : 'invalida'}`}
+                value={texto}
+                onChange={(e) => mudarTexto(e.target.value)}
+                spellCheck={false}
+                autoComplete="off"
+                aria-invalid={!lido.ok}
+                aria-describedby="instr-msg"
+                placeholder="ex.: lw $t0, 8($s1)  ou  0x8E280008"
+              />
+            </div>
+            <div className="status-ciclo">
+              <InstrucaoAtual snapshot={snapshot} />
             </div>
           </div>
-
-          <div className="status-ciclo">
-            <InstrucaoAtual snapshot={snapshot} />
-          </div>
-
-          <div className="valores" role="group" aria-label="Valores antes da instrução">
-            <span className="valores-titulo">Valores antes da instrução:</span>
-            <CampoValor
-              rotulo="PC"
-              valor={pc}
-              formato={formato}
-              passo4
-              onChange={(x) => setPc(x)}
-            />
-            {usaRs && (
-              <CampoValor
-                rotulo={`$${w['rs']} (rs)`}
-                valor={valorReg(w['rs']!)}
-                formato={formato}
-                onChange={(x) => setRegs((r) => ({ ...r, [w['rs']!]: x }))}
-              />
-            )}
-            {usaRt && w['rt'] !== w['rs'] && (
-              <CampoValor
-                rotulo={`$${w['rt']} (rt)`}
-                valor={valorReg(w['rt']!)}
-                formato={formato}
-                onChange={(x) => setRegs((r) => ({ ...r, [w['rt']!]: x }))}
-              />
-            )}
-            {usaMem && (
-              <CampoValor
-                rotulo={`M[${endereco}]`}
-                valor={w['mem_read_data']!}
-                formato={formato}
-                onChange={(x) => setMem((m) => ({ ...m, [endereco]: x }))}
-              />
-            )}
-          </div>
-
-          <div className="fases-nav" role="group" aria-label="Etapas do ciclo">
-            <button
-              type="button"
-              className={`chip-btn ${fase === null ? 'chip-btn-on' : ''}`}
-              onClick={() => setFase(null)}
-            >
-              Ciclo inteiro
-            </button>
-            {etapas.map((e) => (
+          {!lido.ok && (
+            <p id="instr-msg" className="erro-instr" role="alert">
+              {lido.erro} Mostrando a última instrução válida: {ultimaValida.texto}.
+            </p>
+          )}
+          <div className="atalhos-instr" role="group" aria-label="Exemplos">
+            <span className="muted">Exemplos:</span>
+            {ATALHOS.map((a) => (
               <button
-                key={e.fase}
+                key={a}
                 type="button"
-                className={`chip-btn ${fase === e.fase ? 'chip-btn-on' : ''}`}
-                onClick={() => setFase(e.fase)}
-                aria-pressed={fase === e.fase}
+                className={`chip-btn mono ${texto.trim() === a ? 'chip-btn-on' : ''}`}
+                title={a}
+                aria-label={`Exemplo: ${a}`}
+                onClick={() => mudarTexto(a)}
               >
-                {e.fase}. {e.titulo}
+                {a.split(' ')[0]}
               </button>
             ))}
-            <span className="muted dica">
-              <kbd>←</kbd> <kbd>→</kbd> andam pelas etapas
-            </span>
+          </div>
+
+          <div className="linha-controles">
+            <div className="valores" role="group" aria-label="Valores antes da instrução">
+              <span className="valores-titulo">Valores (mude à vontade):</span>
+              <CampoValor
+                rotulo="PC"
+                valor={pc}
+                formato={formato}
+                passo4
+                onChange={(x) => setPc(x)}
+              />
+              {usaRs && (
+                <CampoValor
+                  rotulo={`$${w['rs']} (rs)`}
+                  valor={valorReg(w['rs']!)}
+                  formato={formato}
+                  onChange={(x) => setRegs((r) => ({ ...r, [w['rs']!]: x }))}
+                />
+              )}
+              {usaRt && w['rt'] !== w['rs'] && (
+                <CampoValor
+                  rotulo={`$${w['rt']} (rt)`}
+                  valor={valorReg(w['rt']!)}
+                  formato={formato}
+                  onChange={(x) => setRegs((r) => ({ ...r, [w['rt']!]: x }))}
+                />
+              )}
+              {usaMem && (
+                <CampoValor
+                  rotulo={`M[${endereco}]`}
+                  valor={w['mem_read_data']!}
+                  formato={formato}
+                  onChange={(x) => setMem((m) => ({ ...m, [endereco]: x }))}
+                />
+              )}
+            </div>
+
+            <div className="fases-nav" role="group" aria-label="Etapas do ciclo">
+              <button
+                type="button"
+                className={`chip-btn ${fase === null ? 'chip-btn-on' : ''}`}
+                aria-pressed={fase === null}
+                onClick={() => irParaFase(null)}
+              >
+                Ciclo inteiro
+              </button>
+              <button
+                type="button"
+                className="chip-btn"
+                aria-label="Etapa anterior"
+                title="Etapa anterior (←)"
+                disabled={fase === 1}
+                onClick={() => irParaFase(fase === null ? NUM_FASES : Math.max(1, fase - 1))}
+              >
+                ◀
+              </button>
+              {etapas.map((e) => (
+                <button
+                  key={e.fase}
+                  type="button"
+                  className={`chip-btn ${fase === e.fase ? 'chip-btn-on' : ''}`}
+                  onClick={() => irParaFase(e.fase)}
+                  aria-pressed={fase === e.fase}
+                >
+                  {e.fase}. {e.titulo}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="chip-btn"
+                aria-label="Próxima etapa"
+                title="Próxima etapa (→)"
+                disabled={fase === NUM_FASES}
+                onClick={() => irParaFase(fase === null ? 1 : Math.min(NUM_FASES, fase + 1))}
+              >
+                ▶
+              </button>
+              <button
+                type="button"
+                className="btn btn-primario btn-animar"
+                aria-pressed={animando}
+                onClick={() => {
+                  if (animando) setAnimando(false);
+                  else {
+                    setFase(1);
+                    setAnimando(true);
+                  }
+                }}
+              >
+                {animando ? '■ Parar' : '▶ Animar'}
+              </button>
+            </div>
           </div>
 
           <Datapath
@@ -220,7 +311,16 @@ export function Explorar({ inicial }: Props) {
             formato={formato}
             selecionado={selecionado}
             onSelect={(id) => setSelecionado((s) => (s === id ? null : id))}
+            destaque={destaque}
           />
+          {etapaAtual && (
+            <p className="fase-desc" aria-live="polite" data-testid="etapa-atual">
+              <strong>
+                {etapaAtual.fase}. {etapaAtual.titulo}:
+              </strong>{' '}
+              {etapaAtual.itens[0]}
+            </p>
+          )}
           {snapshot.alerts.length > 0 && (
             <ul className="alertas" role="status">
               {snapshot.alerts.map((a, i) => (
@@ -242,61 +342,85 @@ export function Explorar({ inicial }: Props) {
           {selecionado ? (
             <InfoBloco id={selecionado} snapshot={snapshot} onClose={() => setSelecionado(null)} />
           ) : (
-            <div className="painel">
-              <h2 className="painel-titulo">O que acontece</h2>
-              <ol className="narracao">
-                {etapas.map((e) => (
-                  <li
-                    key={e.fase}
-                    className={
-                      fase === e.fase
-                        ? 'etapa-atual'
-                        : fase !== null && e.fase > fase
-                          ? 'etapa-futura'
-                          : ''
-                    }
+            <>
+              <div className="abas" role="tablist" aria-label="Auxiliares">
+                {ABAS.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    role="tab"
+                    id={`aba-${a.id}`}
+                    aria-selected={aba === a.id}
+                    aria-controls={`painel-${a.id}`}
+                    className="aba"
+                    onClick={() => setAba(a.id)}
                   >
-                    <button type="button" className="etapa-titulo" onClick={() => setFase(e.fase)}>
-                      {e.fase}. {e.titulo}
-                    </button>
-                    <ul>
-                      {e.itens.map((t, i) => (
-                        <li key={i}>{t}</li>
-                      ))}
-                    </ul>
-                  </li>
+                    {a.nome}
+                  </button>
                 ))}
-              </ol>
-              <h2 className="painel-titulo">Resultado (na borda do clock)</h2>
-              <ul className="resultado mono" data-testid="resultado">
-                {wr.reg && (
-                  <li>
-                    ${wr.reg.index} ← {formatar(wr.reg.after, 32, 'dados', formato)}
-                  </li>
+              </div>
+              <div
+                role="tabpanel"
+                id={`painel-${aba}`}
+                aria-labelledby={`aba-${aba}`}
+                className="painel"
+              >
+                {aba === 'acontece' && (
+                  <>
+                    <ol className="narracao">
+                      {etapas.map((e) => (
+                        <li
+                          key={e.fase}
+                          className={
+                            fase === e.fase
+                              ? 'etapa-atual'
+                              : fase !== null && e.fase > fase
+                                ? 'etapa-futura'
+                                : ''
+                          }
+                        >
+                          <button
+                            type="button"
+                            className="etapa-titulo"
+                            onClick={() => irParaFase(e.fase)}
+                          >
+                            {e.fase}. {e.titulo}
+                          </button>
+                          <ul>
+                            {e.itens.map((t, i) => (
+                              <li key={i}>{t}</li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ol>
+                    <h2 className="painel-titulo">Resultado (na borda do clock)</h2>
+                    <ul className="resultado mono" data-testid="resultado">
+                      {wr.reg && (
+                        <li>
+                          ${wr.reg.index} ← {formatar(wr.reg.after, 32, 'dados', formato)}
+                        </li>
+                      )}
+                      {wr.mem && (
+                        <li>
+                          M[{wr.mem.address}] ← {formatar(w['rd2']!, 32, 'dados', formato)}
+                        </li>
+                      )}
+                      <li>PC ← {formatar(wr.pc.after, 32, 'endereco', formato)}</li>
+                    </ul>
+                  </>
                 )}
-                {wr.mem && (
-                  <li>
-                    M[{wr.mem.address}] ← {formatar(w['rd2']!, 32, 'dados', formato)}
-                  </li>
-                )}
-                <li>PC ← {formatar(wr.pc.after, 32, 'endereco', formato)}</li>
-              </ul>
-              <p className="links-cruzados">
-                <a href={`#/m3?i=${encodeURIComponent(instr.texto)}`}>
-                  Testar-se: quiz de sinais desta instrução →
-                </a>
-                <a href={`#/m4?i=${encodeURIComponent(instr.texto)}`}>
-                  Ver a codificação em bits →
-                </a>
-              </p>
-              <details className="sinais-detalhe">
-                <summary>Tabela dos sinais de controle</summary>
-                <Sinais snapshot={snapshot} />
-              </details>
-            </div>
+                {aba === 'sinais' && <Sinais snapshot={snapshot} />}
+                {aba === 'bits' && <Bits word={instr.word} onFios={setFiosFoco} />}
+              </div>
+            </>
           )}
         </aside>
       </main>
+
+      <footer className="creditos muted">
+        {CREDITOS} · {VERSAO}
+      </footer>
     </div>
   );
 }

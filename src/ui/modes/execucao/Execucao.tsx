@@ -9,7 +9,6 @@ import { MemoriaDados } from '../../panels/MemoriaDados';
 import { MemoriaInstrucoes } from '../../panels/MemoriaInstrucoes';
 import { Registradores } from '../../panels/Registradores';
 import { Sinais } from '../../panels/Sinais';
-import { ModoTabs } from '../../ModoTabs';
 import { TemaToggle } from '../../TemaToggle';
 import { encodeCompartilhado } from './link';
 import { atual, NUM_FASES, useExecucao } from './store';
@@ -120,7 +119,7 @@ export function Execucao() {
         <a href="#/" className="marca">
           Datapath Vivo
         </a>
-        <ModoTabs atual="programa" />
+        <h1>Programa passo a passo</h1>
         <div className="controles" role="toolbar" aria-label="Controles da simulação">
           <button
             type="button"

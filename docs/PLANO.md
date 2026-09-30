@@ -381,6 +381,15 @@ reference/
 
 ## 9. Roadmap em fases (com prompt pronto para o Claude Code)
 
+### Versão 0.1 — mostrar à professora antes de construir mais
+
+As fases 0–4 andaram mais rápido que a validação. A v0.1 põe a carroça atrás dos bois: **uma tela só**, publicada, para a professora ver e reagir.
+
+- **No ar:** a tela da instrução. O aluno digita uma instrução e vê o datapath inteiro ou etapa por etapa (◀ ▶ e "Animar"), muda os valores que a instrução usa e consulta os auxiliares: "O que acontece", "Sinais", "Bits" e a explicação de cada bloco.
+- **Fora do ar, guardado no código:** programa passo a passo, quiz de sinais, injeção de falhas e a tela de codificação. Os testes de unidade continuam rodando; os e2e estão em `e2e/fora-da-v0.1/`.
+- **Regra:** nenhum módulo novo antes do retorno da professora. As fases 6–9 abaixo ficam em espera, e a ordem do que volta ou entra na v0.2 sai da conversa com ela (`docs/REUNIAO.md`).
+- **Publicação:** GitHub Pages, repositório público. Os slides (`docs/ref/`) e o Verilog da prática (`reference/pratica10/`) não são versionados.
+
 Cada fase termina com: testes passando, `npm run build` sem erros, commit, e um parágrafo em `docs/CHANGELOG.md`. Não comece a fase seguinte com testes quebrados.
 
 ### Fase 0 — Esqueleto e fundação

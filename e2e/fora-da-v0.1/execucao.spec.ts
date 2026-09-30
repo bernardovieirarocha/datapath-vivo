@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import golden from '../reference/golden_trace_pratica10.json' with { type: 'json' };
+import golden from '../../reference/golden_trace_pratica10.json' with { type: 'json' };
 
 const reg = (page: Page, n: number) => page.locator(`[data-reg="${n}"] .reg-atual`);
 
