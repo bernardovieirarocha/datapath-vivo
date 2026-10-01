@@ -9,7 +9,7 @@ export function Sinais({ snapshot }: { snapshot: Snapshot }) {
   return (
     <div className="painel-sinais">
       <p className="painel-legenda">
-        Sinais do controle para <strong className="mono">{nome}</strong> (opcode{' '}
+        Sinais de controle gerados para a instrução <strong className="mono">{nome}</strong> (opcode{' '}
         <span className="mono">{bin(w['opcode']!, 6)}</span>).
       </p>
       <table className="sinais">

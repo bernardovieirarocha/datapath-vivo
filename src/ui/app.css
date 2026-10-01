@@ -1458,3 +1458,6 @@ input.invalida,
     max-height: max(590px, calc(100vh - 228px));
   }
 }
+.ajuda li {
+  align-content: start;
+}

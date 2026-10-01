@@ -36,7 +36,8 @@ export function Bits({ word, onFios }: Props) {
         <span className="mono" data-testid="hex">
           {hex(word)}
         </span>{' '}
-        · formato {formato}. Passe o mouse num campo para ver os fios que ele alimenta.
+        · formato {formato}. Posicione o cursor sobre um campo para destacar no datapath os fios que
+        ele alimenta.
       </p>
       <ul className="bits-campos">
         {campos.map((c) => (
@@ -63,7 +64,7 @@ export function Bits({ word, onFios }: Props) {
           </li>
         ))}
       </ul>
-      <h3 className="painel-titulo">Como decodificar</h3>
+      <h3 className="painel-titulo">Decodificação passo a passo</h3>
       <ol className="cod-passos">
         {passos.map((p, i) => (
           <li

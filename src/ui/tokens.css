@@ -7,11 +7,11 @@
   --border: #d9dbde;
 
   --wire-data: #1f5fbf;
-  --wire-addr: #0f7c7c;
+  --wire-addr: #009c3b; /* verde-bandeira: separa melhor do azul dos dados */
   --wire-control: #c62828;
   --wire-inactive: rgb(28 29 31 / 0.3);
   --critical: #d98a00;
-  --wire-instr: #4a4f57;
+  --wire-instr: #d35400; /* laranja: campos da instrução não se confundem com o cinza dos inativos */
   --accent: #6a3fd6;
   --on-accent: #ffffff;
   --read: #1f5fbf;
@@ -41,11 +41,11 @@
     --text-muted: #a0a5ad;
     --border: #33363b;
     --wire-data: #6ea2ff;
-    --wire-addr: #4fc6c6;
+    --wire-addr: #3ddc84;
     --wire-control: #ff6b6b;
     --wire-inactive: rgb(232 233 235 / 0.3);
     --critical: #ffb534;
-    --wire-instr: #b4bac4;
+    --wire-instr: #ff9f43;
     --accent: #b49bff;
     --on-accent: #16121f;
     --read: #6ea2ff;
@@ -65,11 +65,11 @@
   --text-muted: #a0a5ad;
   --border: #33363b;
   --wire-data: #6ea2ff;
-  --wire-addr: #4fc6c6;
+  --wire-addr: #3ddc84;
   --wire-control: #ff6b6b;
   --wire-inactive: rgb(232 233 235 / 0.3);
   --critical: #ffb534;
-  --wire-instr: #b4bac4;
+  --wire-instr: #ff9f43;
   --accent: #b49bff;
   --on-accent: #16121f;
   --read: #6ea2ff;

@@ -99,33 +99,39 @@ describe('montarEstado + narração', () => {
     expect(r.snapshot.wires['rd1']).toBe(68);
     expect(r.snapshot.wires['alu_result']).toBe(76);
     expect(r.next.regs[8]).toBe(valorPadraoMem(76));
-    expect(r.texto(3)).toContain('68 + 8 = 76');
-    expect(r.texto(2)).toContain('Read data 2 não é usado');
-    expect(ver('sw $8, 8($17)').texto(2)).not.toContain('não é usado');
-    expect(r.texto(4)).toContain('M[76] = 1076');
-    expect(r.texto(5)).toContain('$8 ← 1076');
+    expect(r.texto(3)).toContain('Read data 1 (68) e o imediato estendido (8) e calcula a soma 76');
+    expect(r.texto(2)).toContain('o valor de Read data 2 não é utilizado');
+    expect(ver('sw $8, 8($17)').texto(2)).not.toContain('não é utilizado');
+    expect(r.texto(4)).toContain(
+      'recebe o endereço 76 e, com MemRead = 1, apresenta na saída o dado armazenado: 1076',
+    );
+    expect(r.texto(5)).toContain('Na borda de subida do clock, $8 recebe 1076');
   });
 
   it('valores escolhidos pelo aluno e PC diferente de 0', () => {
     const r = ver('add $8, $17, $18', { 17: 12, 18: 30 }, {}, 40);
     expect(r.next.regs[8]).toBe(42);
-    expect(r.texto(1)).toContain('O PC (40)');
+    expect(r.texto(1)).toContain(
+      'A Memória de Instruções recebe na entrada o endereço armazenado no PC (40) e apresenta na saída a instrução',
+    );
     expect(r.texto(1)).toContain('PC + 4 = 44');
-    expect(r.texto(2)).toContain('funct 100000');
+    expect(r.texto(2)).toContain('ALUOp = 10 e o campo funct (100000)');
     expect(r.texto(3)).toContain('12 + 30 = 42');
-    expect(r.texto(5)).toContain('RegDst = 1 escolhe rd ($8)');
+    expect(r.texto(5)).toContain('RegDst = 1 seleciona o campo rd ($8)');
   });
 
   it('sw, beq tomado e não tomado, j, addi com negativo, slt', () => {
-    expect(ver('sw $8, 8($17)', { 8: 5 }).texto(4)).toContain('gravar $8 = 5 em M[76]');
+    expect(ver('sw $8, 8($17)', { 8: 5 }).texto(4)).toContain(
+      'recebe o endereço 76 e o dado de $8 (5)',
+    );
     const t = ver('beq $17, $18, 3', { 17: 7, 18: 7 }, {}, 8);
     expect(t.texto(3)).toContain('desvio é tomado');
     expect(t.next.pc).toBe(8 + 4 + 12);
     expect(ver('beq $17, $18, 3').texto(3)).toContain('não é tomado');
     const j = ver('j 20');
     expect(j.next.pc).toBe(80);
-    expect(j.texto(3)).toContain('ninguém usa');
-    expect(j.texto(2)).not.toContain('Banco de Registradores lê');
+    expect(j.texto(3)).toContain('não é utilizado: o desvio incondicional não depende da ULA');
+    expect(j.texto(2)).not.toContain('Banco de Registradores recebe');
     const a = ver('addi $8, $17, -5', { 17: 2 });
     expect(toSigned(a.next.regs[8]!)).toBe(-3);
     expect(a.texto(3)).toContain('2 + -3'.replace('-3', '-5'));
@@ -136,7 +142,7 @@ describe('montarEstado + narração', () => {
     expect(ver('add $0, $17, $18').texto(5)).toContain('$0');
     const r = step(montarEstado(0xfc000000, 0, {}, {}));
     const e = narrar(r.snapshot, () => '0');
-    expect(e[1]!.itens[0]).toContain('não está na tabela');
+    expect(e[1]!.itens[0]).toContain('não consta na tabela de controle');
   });
 
   it('PC além da memória de instruções: instrução fica fora (lê 0)', () => {

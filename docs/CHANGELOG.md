@@ -236,3 +236,18 @@ O projeto andou mais rápido que a validação. A v0.1 reduz o que está no ar a
 - No painel Bits, o imediato de uma instrução tipo I acendia também o fio `Instruction [25–0]` (que é do jump). Agora o tipo I acende só `[15–0]` e o `j` só `[25–0]`. A tela de codificação (fora do ar) ainda tem esse defeito.
 
 **Testes**: 348 de unidade, 11 e2e da tela única.
+
+## v0.2 — ajustes pedidos pela professora — out/2026
+
+A professora avaliou a v0.1 ("muito didática, vou usar nas minhas aulas") e pediu melhorias de usabilidade e textos mais formais. Todos os 9 pontos estão registrados em `docs/REUNIAO.md`.
+
+**Feito**
+- **Rótulos**: "Exemplos" → "Instruções suportadas"; "Valores (mude à vontade)" → "Registradores e memória"; "Ciclo inteiro" → "Ciclo completo"; "Entendi" → "Fechar".
+- **Abas**: "Bits / Sinais / O que acontece" viraram **Instrução / Controle / Execução**, nessa ordem; a primeira abre por padrão.
+- **Etapas**: Busca, Decodificação, Execução, Acesso à memória, Escrita do resultado.
+- **Ajuda de primeira visita** em 4 passos, que dizem onde fica cada coisa.
+- **Explicação das etapas** (`src/content/narracao.ts`) reescrita em registro formal ("a unidade recebe na entrada… e apresenta na saída…"). Também formalizados os textos das unidades funcionais, os alertas, a decodificação passo a passo, as legendas e as dicas dos fios.
+- **Cores**: campos da instrução de cinza escuro para laranja (#d35400; no escuro, #ff9f43); endereços de verde-azulado para verde-bandeira (#009c3b; no escuro, #3ddc84). Com isso, cada etapa tem uma cor própria e nenhuma se confunde com o cinza dos elementos não usados.
+- Subtítulo: "Simulação do caminho de dados MIPS monociclo". Versão no rodapé: v0.2.
+
+**Testes**: 348 de unidade e 13 e2e. Os novos e2e conferem a ordem e o padrão das abas e as cores calculadas no navegador.

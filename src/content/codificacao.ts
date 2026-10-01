@@ -7,7 +7,7 @@ export interface Passo {
   campos: readonly string[];
 }
 
-const reg = (n: number) => `${n} ($${n}, também chamado $${REGISTER_NAMES[n]})`;
+const reg = (n: number) => `${n} ($${n}, também denominado $${REGISTER_NAMES[n]})`;
 
 /**
  * Decodificação passo a passo, como no método da lista:
@@ -19,14 +19,16 @@ export function passosDecodificacao(word: number): Passo[] {
   const b = bin(word, 32);
   const passos: Passo[] = [
     {
-      texto: `Os 32 bits: ${b.slice(0, 6)} ${b.slice(6)}. O opcode são os 6 bits da esquerda (31–26): ${bin(f.opcode, 6)} = ${f.opcode}.`,
+      texto: `Instrução em binário: ${b.slice(0, 6)} ${b.slice(6)}. O opcode corresponde aos 6 bits mais significativos (31–26): ${bin(f.opcode, 6)} = ${f.opcode}.`,
       campos: ['opcode'],
     },
   ];
   if (f.opcode === 0) {
     passos.push({
-      texto: `Opcode 000000 → tipo R: quem diz a operação é o funct (bits 5–0) = ${bin(f.funct, 6)} = ${f.funct}${
-        d.ok ? ` → ${d.spec.mnemonic}.` : ', que não está na tabela da aula.'
+      texto: `O opcode 000000 indica o formato R: a operação é definida pelo campo funct (bits 5–0) = ${bin(f.funct, 6)} = ${f.funct}${
+        d.ok
+          ? `, que corresponde à instrução ${d.spec.mnemonic}.`
+          : ', que não consta na tabela da aula.'
       }`,
       campos: ['funct'],
     });
@@ -34,8 +36,8 @@ export function passosDecodificacao(word: number): Passo[] {
     const spec = INSTRUCTIONS.find((s) => s.format !== 'R' && s.opcode === f.opcode);
     passos.push({
       texto: spec
-        ? `Opcode ${f.opcode} → ${spec.mnemonic}, formato ${spec.format}${spec.base ? '' : ' (não faz parte do datapath da aula)'}.`
-        : `Opcode ${f.opcode} não está na tabela da aula.`,
+        ? `O opcode ${f.opcode} corresponde à instrução ${spec.mnemonic} (formato ${spec.format})${spec.base ? '' : ', que não faz parte do datapath da aula'}.`
+        : `O opcode ${f.opcode} não consta na tabela da aula.`,
       campos: ['opcode'],
     });
   }
@@ -46,11 +48,11 @@ export function passosDecodificacao(word: number): Passo[] {
       passos.push({ texto: `rs (25–21) = ${bin(f.rs, 5)} = ${reg(f.rs)}.`, campos: ['rs'] });
       passos.push({ texto: `rt (20–16) = ${bin(f.rt, 5)} = ${reg(f.rt)}.`, campos: ['rt'] });
       passos.push({
-        texto: `rd (15–11) = ${bin(f.rd, 5)} = ${reg(f.rd)} — o destino.`,
+        texto: `rd (15–11) = ${bin(f.rd, 5)} = ${reg(f.rd)}: registrador de destino.`,
         campos: ['rd'],
       });
       passos.push({
-        texto: `shamt (10–6) = ${bin(f.shamt, 5)}${f.shamt ? ' (ignorado por esta instrução).' : ' (não usado).'}`,
+        texto: `shamt (10–6) = ${bin(f.shamt, 5)}${f.shamt ? ' (ignorado por esta instrução).' : ' (não utilizado).'}`,
         campos: ['shamt'],
       });
       break;
@@ -59,7 +61,7 @@ export function passosDecodificacao(word: number): Passo[] {
       passos.push({ texto: `rs (25–21) = ${bin(f.rs, 5)} = ${reg(f.rs)}.`, campos: ['rs'] });
       passos.push({ texto: `rt (20–16) = ${bin(f.rt, 5)} = ${reg(f.rt)}.`, campos: ['rt'] });
       passos.push({
-        texto: `Imediato (15–0) = ${bin(f.imm16, 16)} = ${imm}${f.imm16 & 0x8000 ? ' (bit 15 = 1: negativo em complemento de 2)' : ''}.`,
+        texto: `Imediato (15–0) = ${bin(f.imm16, 16)} = ${imm}${f.imm16 & 0x8000 ? ' (bit 15 = 1: valor negativo em complemento de 2)' : ''}.`,
         campos: ['imm'],
       });
       break;
@@ -71,7 +73,7 @@ export function passosDecodificacao(word: number): Passo[] {
       });
       break;
   }
-  passos.push({ texto: `Resultado: ${disassemble(word)}`, campos: [] });
+  passos.push({ texto: `Instrução decodificada: ${disassemble(word)}`, campos: [] });
   return passos;
 }
 

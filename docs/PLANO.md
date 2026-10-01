@@ -389,6 +389,7 @@ As fases 0–4 andaram mais rápido que a validação. A v0.1 põe a carroça at
 - **Fora do ar, guardado no código:** programa passo a passo, quiz de sinais, injeção de falhas e a tela de codificação. Os testes de unidade continuam rodando; os e2e estão em `e2e/fora-da-v0.1/`.
 - **Regra:** nenhum módulo novo antes do retorno da professora. As fases 6–9 abaixo ficam em espera, e a ordem do que volta ou entra na v0.2 sai da conversa com ela (`docs/REUNIAO.md`).
 - **Publicação:** GitHub Pages, repositório público. Os slides (`docs/ref/`) e o Verilog da prática (`reference/pratica10/`) não são versionados.
+- **Retorno (out/2026):** a professora aprovou e vai usar nas aulas; os ajustes de texto, cores e rótulos que ela pediu viraram a v0.2 (`docs/REUNIAO.md`). Os módulos fora do ar continuam em espera até ela indicar o que é mais útil.
 
 Cada fase termina com: testes passando, `npm run build` sem erros, commit, e um parágrafo em `docs/CHANGELOG.md`. Não comece a fase seguinte com testes quebrados.
 

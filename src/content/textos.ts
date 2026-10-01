@@ -38,16 +38,16 @@ export const FASES: readonly { nome: string; descricao: string }[] = [
 export function textoAlerta(code: AlertCode, value: number): string {
   switch (code) {
     case 'opcode-desconhecido':
-      return `Opcode ${value.toString(2).padStart(6, '0')} desconhecido: o controle zerou todos os sinais e a instrução não faz nada (só PC + 4).`;
+      return `Opcode ${value.toString(2).padStart(6, '0')} não reconhecido: a Unidade de Controle mantém todos os sinais em 0 e a instrução não produz efeito (apenas PC + 4).`;
     case 'funct-desconhecido':
       return value === 0
-        ? 'Instrução 0x00000000 (nop): o funct 000000 não está na tabela do controle da ULA, que gera 000 (AND); o resultado vai para $0, então nada muda.'
+        ? 'Instrução 0x00000000 (nop): o funct 000000 não consta na tabela do Controle da ULA, que gera 000 (AND); o resultado é destinado ao $0 e nenhum registrador é alterado.'
         : `Funct ${value.toString(2).padStart(6, '0')} desconhecido: o controle da ULA gera 000 (AND).`;
     case 'dmem-fora-da-memoria':
-      return `Endereço ${hex(value)} fora da memória de dados do simulador (0 a 255): a leitura dá 0 e a escrita é ignorada.`;
+      return `Endereço ${hex(value)} fora da Memória de Dados do simulador (0 a 255): a leitura resulta em 0 e a escrita é ignorada.`;
     case 'dmem-desalinhado':
-      return `Endereço ${hex(value)} não é múltiplo de 4. No MIPS real isso gera exceção; aqui os 2 bits de baixo são ignorados.`;
+      return `Endereço ${hex(value)} não é múltiplo de 4. No MIPS, isso gera uma exceção; no simulador, os 2 bits menos significativos são ignorados.`;
     case 'pc-fora-da-imem':
-      return `PC = ${hex(value)} passou do fim da memória de instruções: a instrução lida é 0x00000000.`;
+      return `PC = ${hex(value)} está além do fim da Memória de Instruções: a instrução lida é 0x00000000.`;
   }
 }

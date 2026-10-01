@@ -15,7 +15,7 @@ export function Ajuda({ onFechar }: { onFechar: () => void }) {
         ))}
       </ol>
       <button type="button" className="btn" onClick={onFechar}>
-        Entendi
+        Fechar
       </button>
     </section>
   );

@@ -41,16 +41,18 @@ describe('passosDecodificacao (método da lista)', () => {
   const textos = (w: number) => passosDecodificacao(w).map((p) => p.texto);
   it('tipo R: opcode 0, o funct decide', () => {
     const t = textos(0x02324020); // add $8, $17, $18
-    expect(t[1]).toMatch(/tipo R.*funct.*100000 = 32 → add/);
-    expect(t.at(-1)).toBe('Resultado: add $8, $17, $18');
-    expect(t.join(' ')).toContain('rd (15–11) = 01000 = 8 ($8, também chamado $t0) — o destino');
+    expect(t[1]).toMatch(/formato R.*funct.*100000 = 32, que corresponde à instrução add/);
+    expect(t.at(-1)).toBe('Instrução decodificada: add $8, $17, $18');
+    expect(t.join(' ')).toContain(
+      'rd (15–11) = 01000 = 8 ($8, também denominado $t0): registrador de destino',
+    );
   });
   it('tipo I com imediato negativo, tipo J, extensão, desconhecida', () => {
-    expect(textos(0x1109ffff).join(' ')).toContain('= -1 (bit 15 = 1: negativo');
+    expect(textos(0x1109ffff).join(' ')).toContain('= -1 (bit 15 = 1: valor negativo');
     expect(textos(0x08000060).join(' ')).toContain('Endereço (25–0) = 96');
     expect(textos(0x14220000)[1]).toContain('não faz parte do datapath da aula');
     expect(textos(0xfc000000)).toHaveLength(2);
-    expect(textos(0x0000003f)[1]).toContain('não está na tabela');
+    expect(textos(0x0000003f)[1]).toContain('não consta na tabela');
     expect(textos(0x02324060).join(' ')).toContain('ignorado');
   });
 });

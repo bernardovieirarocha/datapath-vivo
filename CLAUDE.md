@@ -4,7 +4,7 @@ Ferramenta web didática e interativa do caminho de dados MIPS (monociclo e mult
 
 O plano completo, com as fases e os critérios de aceite, está em `docs/PLANO.md`. Leia antes de qualquer tarefa grande e siga a fase pedida, sem adiantar as próximas.
 
-**Estado: v0.1.** Está no ar só a tela da instrução (`src/ui/modes/explorar/`). Programa passo a passo, quiz, falhas e codificação existem no código mas não têm rota. **Não construa nem reative módulo nenhum antes do retorno da professora** (`docs/PLANO.md`, "Versão 0.1", e `docs/REUNIAO.md`).
+**Estado: v0.2** (no ar e aprovada pela professora; ajustes dela em `docs/REUNIAO.md`). Está no ar só a tela da instrução (`src/ui/modes/explorar/`). Programa passo a passo, quiz, falhas e codificação existem no código mas não têm rota. **Não construa nem reative módulo nenhum antes do retorno da professora** (`docs/PLANO.md`, "Versão 0.1", e `docs/REUNIAO.md`).
 
 Os slides (`docs/ref/`) e o Verilog da prática (`reference/pratica10/`) ficam só na máquina do Bernardo, fora do git: o repositório é público. Se não estiverem na pasta, peça a ele.
 
@@ -15,7 +15,7 @@ Os slides (`docs/ref/`) e o Verilog da prática (`reference/pratica10/`) ficam s
 3. **O core não conhece a UI.** `src/core/**` é TypeScript puro, sem React/DOM, determinístico: `step(state) -> { next, snapshot }`. A UI só lê snapshots.
 4. **O datapath é dados.** Componentes, portas e fios (com largura em bits) vivem numa netlist declarativa; o SVG usa os mesmos ids. Não coloque lógica de simulação em componentes visuais.
 5. **Aritmética uint32 sempre.** Use os helpers de `src/core/bits.ts` (`u32`, `toSigned`, `signExt16`, `bits`). Nunca confie em number de JS sem `>>> 0`.
-6. **Interface em português (pt-BR)**, com o vocabulário exato dos slides: RegDst, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite, Jump, "Banco de Registradores", "Extensão de Sinal", "Shift left 2".
+6. **Interface em português (pt-BR), em registro formal** (pedido da professora), com o vocabulário exato dos slides: RegDst, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite, Jump, "Banco de Registradores", "Extensão de Sinal", "Shift left 2".
 7. **Slide ≠ livro? O slide é o padrão.** Mostre o que a aula ensina e, quando o livro difere, um selo "no livro é assim…". Diferença conhecida: jump = 2 ciclos no multiciclo dos slides × 3 na FSM do P&H.
 
 ## Resumo do datapath da aula (docs/PLANO.md, Seção 2)

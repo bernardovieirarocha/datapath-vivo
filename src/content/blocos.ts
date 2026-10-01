@@ -26,7 +26,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     titulo: 'Constante 4',
     tipo: 'combinacional',
     descricao:
-      'Cada instrução MIPS tem 4 bytes. Somar 4 ao PC aponta para a instrução seguinte na memória.',
+      'Cada instrução MIPS ocupa 4 bytes. Somar 4 ao PC resulta no endereço da instrução seguinte na memória.',
     slide: 'Aula 06 (busca da instrução)',
   },
   pcAdder: {
@@ -50,7 +50,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     naFigura: 'Instruction [31–0]',
     tipo: 'combinacional',
     descricao:
-      'Os 32 bits da instrução são "fatiados" em fios: [31–26] opcode vai para o Controle; [25–21] rs e [20–16] rt vão para as leituras do banco; [15–11] rd pode ser o destino; [15–0] é o imediato; [5–0] é o funct; [25–0] é o endereço do jump. Não há lógica aqui, só fios.',
+      'Os 32 bits da instrução são divididos em campos, cada um conduzido por um conjunto de fios: [31–26] (opcode) para a Unidade de Controle; [25–21] (rs) e [20–16] (rt) para as leituras do Banco de Registradores; [15–11] (rd) como possível destino; [15–0] (imediato); [5–0] (funct); [25–0] (endereço do jump). Não há processamento nesta etapa, apenas a distribuição dos bits.',
     slide: 'Aula 06, p. 12 (formatos R, I e J)',
   },
   control: {
@@ -74,7 +74,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     naFigura: 'Registers',
     tipo: 'sequencial',
     descricao:
-      'Leitura de até dois registradores por vez (Read data 1 e 2, combinacional) e escrita em apenas um (Write register), na borda do clock, só quando RegWrite = 1. O $0 vale sempre 0.',
+      'Permite a leitura de até dois registradores por vez (Read data 1 e Read data 2, de forma combinacional) e a escrita em apenas um (Write register), na borda de subida do clock, somente quando RegWrite = 1. O registrador $0 vale sempre 0.',
     slide: 'Aula 06, p. 18–20',
   },
   signExt: {
@@ -106,7 +106,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     naFigura: 'ALU',
     tipo: 'combinacional',
     descricao:
-      'Faz a operação escolhida pelo controle da ULA. A saída Zero vale 1 quando o resultado é 0 — é assim que o beq compara dois registradores (subtrai e olha o Zero).',
+      'Realiza a operação definida pelo Controle da ULA. A saída Zero vale 1 quando o resultado é 0; é dessa forma que o beq compara dois registradores (realiza a subtração e verifica o sinal Zero).',
     slide: 'Aula 06, p. 27',
   },
   dmem: {
@@ -130,7 +130,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     naFigura: 'Shift left 2',
     tipo: 'combinacional',
     descricao:
-      'Multiplica o deslocamento do beq por 4: o imediato conta instruções (palavras), mas o PC conta bytes.',
+      'Multiplica o deslocamento do beq por 4: o imediato é expresso em instruções (palavras), enquanto o PC é expresso em bytes.',
     slide: 'Aula 06 (desvio condicional)',
   },
   branchAdder: {
@@ -144,7 +144,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     titulo: 'Porta AND (Branch · Zero)',
     tipo: 'combinacional',
     descricao:
-      'O desvio só é tomado se a instrução for beq (Branch = 1) E os registradores forem iguais (Zero = 1). A saída é o PCSrc, que seleciona o mux do desvio.',
+      'O desvio é tomado somente se a instrução for beq (Branch = 1) e os registradores forem iguais (Zero = 1). A saída é o sinal PCSrc, que seleciona a entrada do multiplexador do desvio.',
     slide: 'Aula 06, p. 31 (sinal Branch)',
   },
   muxPCSrc: {
@@ -158,7 +158,8 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     titulo: 'Shift left 2 (jump)',
     naFigura: 'Shift left 2',
     tipo: 'combinacional',
-    descricao: 'Acrescenta dois zeros ao campo de 26 bits do jump: 26 bits viram 28.',
+    descricao:
+      'Acrescenta dois zeros à direita do campo de 26 bits do jump, produzindo um valor de 28 bits.',
     slide: 'Aula 06, p. 43–45',
   },
   jumpConcat: {
@@ -166,7 +167,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     naFigura: 'Jump address [31–0]',
     tipo: 'combinacional',
     descricao:
-      'Concatena os 4 bits de cima de PC + 4 com os 28 bits vindos do shift: {PC+4[31–28], endereço, 00}. Por isso o j só alcança a mesma região de 256 MB.',
+      'Concatena os 4 bits mais significativos de PC + 4 com os 28 bits vindos do Shift left 2: {PC+4[31–28], endereço, 00}. Por isso, o j alcança apenas endereços da mesma região de 256 MB.',
     slide: 'Aula 06, p. 43–46',
   },
   muxJump: {
@@ -174,7 +175,7 @@ export const BLOCOS: Readonly<Record<string, TextoBloco>> = {
     naFigura: 'Mux',
     tipo: 'combinacional',
     descricao:
-      'Com Jump = 1 o próximo PC é o endereço do jump; senão, é o que veio do mux do desvio. O jump tem prioridade.',
+      'Com Jump = 1, o próximo PC é o endereço do jump; caso contrário, é o valor proveniente do multiplexador do desvio. O jump tem prioridade.',
     slide: 'Aula 06, p. 48',
   },
 };

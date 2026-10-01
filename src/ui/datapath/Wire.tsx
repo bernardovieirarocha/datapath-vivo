@@ -31,8 +31,8 @@ export function Wire({ id, layout, width, kind, value, status, formato, destaque
     mostraValor
       ? `: ${descrever(value, width)}`
       : status === 'futuro'
-        ? ': ainda não chegou'
-        : ': não influencia este ciclo'
+        ? ': ainda não alcançado nesta etapa'
+        : ': não utilizado neste ciclo'
   }`;
   const branches = layout.paths.slice(1);
   const last = layout.paths.map((p) => p[p.length - 1]!);

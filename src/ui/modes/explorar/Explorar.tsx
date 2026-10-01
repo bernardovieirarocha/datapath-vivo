@@ -19,11 +19,12 @@ const NUM_FASES = 5;
 /** Tempo em cada etapa no "Animar". */
 const MS_POR_ETAPA = 1500;
 
-type Aba = 'acontece' | 'sinais' | 'bits';
+/** Ordem sugerida pela professora: tradução da instrução → controle → execução. */
+type Aba = 'instrucao' | 'controle' | 'execucao';
 const ABAS: readonly { id: Aba; nome: string }[] = [
-  { id: 'acontece', nome: 'O que acontece' },
-  { id: 'sinais', nome: 'Sinais' },
-  { id: 'bits', nome: 'Bits' },
+  { id: 'instrucao', nome: 'Instrução' },
+  { id: 'controle', nome: 'Controle' },
+  { id: 'execucao', nome: 'Execução' },
 ];
 
 interface Props {
@@ -45,7 +46,7 @@ export function Explorar({ inicial }: Props) {
   const [animando, setAnimando] = useState(false);
   const [formato, setFormato] = useState<Formato>('dec');
   const [selecionado, setSelecionado] = useState<string | null>(null);
-  const [aba, setAba] = useState<Aba>('acontece');
+  const [aba, setAba] = useState<Aba>('instrucao');
   const [fiosFoco, setFiosFoco] = useState<readonly string[]>([]);
   const [ajuda, setAjuda] = useState(() => !ajudaJaVista());
 
@@ -195,15 +196,15 @@ export function Explorar({ inicial }: Props) {
               {lido.erro} Mostrando a última instrução válida: {ultimaValida.texto}.
             </p>
           )}
-          <div className="atalhos-instr" role="group" aria-label="Exemplos">
-            <span className="muted">Exemplos:</span>
+          <div className="atalhos-instr" role="group" aria-label="Instruções suportadas">
+            <span className="muted">Instruções suportadas:</span>
             {ATALHOS.map((a) => (
               <button
                 key={a}
                 type="button"
                 className={`chip-btn mono ${texto.trim() === a ? 'chip-btn-on' : ''}`}
                 title={a}
-                aria-label={`Exemplo: ${a}`}
+                aria-label={`Carregar ${a}`}
                 onClick={() => mudarTexto(a)}
               >
                 {a.split(' ')[0]}
@@ -212,8 +213,8 @@ export function Explorar({ inicial }: Props) {
           </div>
 
           <div className="linha-controles">
-            <div className="valores" role="group" aria-label="Valores antes da instrução">
-              <span className="valores-titulo">Valores (mude à vontade):</span>
+            <div className="valores" role="group" aria-label="Registradores e memória">
+              <span className="valores-titulo">Registradores e memória:</span>
               <CampoValor
                 rotulo="PC"
                 valor={pc}
@@ -254,7 +255,7 @@ export function Explorar({ inicial }: Props) {
                 aria-pressed={fase === null}
                 onClick={() => irParaFase(null)}
               >
-                Ciclo inteiro
+                Ciclo completo
               </button>
               <button
                 type="button"
@@ -333,8 +334,8 @@ export function Explorar({ inicial }: Props) {
             <span className="leg leg-endereco">endereços</span>
             <span className="leg leg-instrucao">campos da instrução</span>
             <span className="leg leg-controle">controle</span>
-            <span className="leg leg-inativo">não é usado por esta instrução</span>
-            <span className="muted">Clique num bloco para ver o que ele faz.</span>
+            <span className="leg leg-inativo">não utilizado por esta instrução</span>
+            <span className="muted">Clique em uma unidade funcional para ver sua descrição.</span>
           </p>
         </section>
 
@@ -365,7 +366,7 @@ export function Explorar({ inicial }: Props) {
                 aria-labelledby={`aba-${aba}`}
                 className="painel"
               >
-                {aba === 'acontece' && (
+                {aba === 'execucao' && (
                   <>
                     <ol className="narracao">
                       {etapas.map((e) => (
@@ -394,7 +395,7 @@ export function Explorar({ inicial }: Props) {
                         </li>
                       ))}
                     </ol>
-                    <h2 className="painel-titulo">Resultado (na borda do clock)</h2>
+                    <h2 className="painel-titulo">Resultado (na borda de subida do clock)</h2>
                     <ul className="resultado mono" data-testid="resultado">
                       {wr.reg && (
                         <li>
@@ -410,8 +411,8 @@ export function Explorar({ inicial }: Props) {
                     </ul>
                   </>
                 )}
-                {aba === 'sinais' && <Sinais snapshot={snapshot} />}
-                {aba === 'bits' && <Bits word={instr.word} onFios={setFiosFoco} />}
+                {aba === 'controle' && <Sinais snapshot={snapshot} />}
+                {aba === 'instrucao' && <Bits word={instr.word} onFios={setFiosFoco} />}
               </div>
             </>
           )}

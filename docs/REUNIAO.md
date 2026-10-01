@@ -33,3 +33,17 @@ Fora do ar na v0.1, mas pronto no código. A ordem depende do que ela achar mais
 - **Codificação**: calculadoras de desvio e de salto com o exemplo do slide.
 
 Ainda não feito: caminho crítico e período do clock (Aula 07), multiciclo, exercícios.
+
+## Retorno da professora (v0.1 → v0.2)
+
+Avaliação geral: "a ferramenta está muito didática e vai ajudar demais na disciplina"; ela vai usar nas aulas. Pediu melhorias de usabilidade (cores, texto, explicações) e textos mais formais. Pontos e o que foi feito na v0.2:
+
+1. "Exemplos" → **"Instruções suportadas"**.
+2. Ajuda sem o exemplo do lw: "a instrução pode ser informada em assembly, hexadecimal ou binário".
+3. Ajuda: "as unidades funcionais e os fios por onde a instrução se propaga ficam destacados em cores; os demais permanecem em cinza".
+4. Ajuda do item 3 estava confusa (onde mudar os valores? clicar em quê?): virou dois passos, que dizem onde fica "Registradores e memória" e que se clica numa unidade funcional (ex.: ULA, Banco de Registradores), e o que cada aba mostra.
+5. Abas renomeadas e reordenadas: **Instrução** (tradução da instrução) → **Controle** (sinais) → **Execução** (passo a passo). A primeira abre por padrão.
+6. Descrições das etapas reescritas no formato "a unidade recebe na entrada… e apresenta na saída…". Ex.: "A Memória de Instruções recebe na entrada o endereço armazenado no PC (0) e apresenta na saída a instrução armazenada nesse endereço". Ela espera ajustar mais depois de ver com os alunos.
+7. Cores: os campos da instrução (etapa de decodificação) estavam num cinza escuro que se confundia com os elementos não usados → **laranja**. O verde-azulado dos endereços (etapa de busca) ficava próximo do azul dos dados para quem tem dificuldade visual → **verde-bandeira** (#009c3b).
+8. "Valores (mude à vontade)" → **"Registradores e memória"**.
+9. Textos mais formais em toda a tela (ajuda, legendas, explicação das etapas, unidades funcionais, alertas, decodificação).
