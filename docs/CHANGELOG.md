@@ -251,3 +251,9 @@ A professora avaliou a v0.1 ("muito didática, vou usar nas minhas aulas") e ped
 - Subtítulo: "Simulação do caminho de dados MIPS monociclo". Versão no rodapé: v0.2.
 
 **Testes**: 348 de unidade e 13 e2e. Os novos e2e conferem a ordem e o padrão das abas e as cores calculadas no navegador.
+
+## v0.2.1 — ajuste de cores — out/2026
+
+- Laranja e verde trocados: o laranja dos campos da instrução (decodificação) ficava quase igual ao vermelho dos sinais de controle, que aparecem na mesma etapa, sobretudo no tema claro. Agora os **endereços** (busca: PC, PC + 4, destinos) são **laranja** e os **campos da instrução** são **verde-bandeira**.
+- Fio da constante **4** em **preto** (cor do texto): era azul como os dados e parecia pertencer à etapa de execução. A netlist ganhou a categoria de fio `constante`.
+- O e2e de cores confere as cinco: laranja (busca), verde (decodificação), vermelho (controle), azul (dados) e preto (constante).

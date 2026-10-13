@@ -340,6 +340,9 @@ a.modulo {
 .wire-controle {
   --c: var(--wire-control);
 }
+.wire-constante {
+  --c: var(--text);
+}
 .wire-line {
   stroke: var(--c);
   transition: stroke 0.2s;

@@ -212,14 +212,14 @@ test('ajuda de primeira visita aparece uma vez e reabre no "?"', async ({ page }
 
 test('rodapé com os créditos e a versão; tema escuro funciona', async ({ page }) => {
   await expect(page.getByRole('contentinfo')).toContainText('Monitoria de AOC1 — CEFET-MG');
-  await expect(page.getByRole('contentinfo')).toContainText('v0.2');
+  await expect(page.getByRole('contentinfo')).toContainText('v0.2.1');
   const tema = page.getByRole('button', { name: /Tema:/ });
   await tema.click();
   await tema.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 
-test('cores: campos da instrução em laranja e endereços em verde-bandeira (não se confundem com o cinza)', async ({
+test('cores: endereços em laranja, campos da instrução em verde-bandeira, constante 4 em preto', async ({
   page,
 }) => {
   await page
@@ -231,9 +231,11 @@ test('cores: campos da instrução em laranja e endereços em verde-bandeira (n�
       .locator(`[data-wire="${id}"] .wire-line`)
       .first()
       .evaluate((el) => getComputedStyle(el).stroke);
-  expect(await cor('rs')).toBe('rgb(211, 84, 0)');
-  expect(await cor('pc')).toBe('rgb(0, 156, 59)');
-  expect(await cor('rd1')).toBe('rgb(31, 95, 191)');
+  expect(await cor('pc')).toBe('rgb(211, 84, 0)'); // laranja: busca
+  expect(await cor('rs')).toBe('rgb(0, 156, 59)'); // verde-bandeira: decodificação
+  expect(await cor('RegDst')).toBe('rgb(198, 40, 40)'); // vermelho: controle
+  expect(await cor('rd1')).toBe('rgb(31, 95, 191)'); // azul: dados
+  expect(await cor('const_4')).toBe('rgb(28, 29, 31)'); // preto: constante, sem etapa
   await expect(page.getByRole('group', { name: 'Registradores e memória' })).toContainText(
     'Registradores e memória:',
   );

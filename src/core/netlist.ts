@@ -4,7 +4,8 @@
  * A UI desenha a partir destes ids; o simulador avalia a partir deles.
  */
 
-export type WireKind = 'dados' | 'endereco' | 'instrucao' | 'controle';
+/** `constante`: valor fixo do hardware (ex.: o 4 do somador PC + 4), sem relação com uma etapa. */
+export type WireKind = 'dados' | 'endereco' | 'instrucao' | 'controle' | 'constante';
 
 export interface PortRef {
   component: string;

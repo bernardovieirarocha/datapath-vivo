@@ -1,5 +1,5 @@
 /** Textos da tela única: ajuda de primeira visita e créditos. Para a monitoria revisar. */
-export const VERSAO = 'v0.2';
+export const VERSAO = 'v0.2.1';
 
 export const SUBTITULO = 'Simulação do caminho de dados MIPS monociclo';
 

@@ -191,7 +191,7 @@ const w = (id: string, width: number, kind: WireKind, from: string, ...to: strin
 
 // prettier-ignore
 const WIRES: readonly WireSpec[] = [
-  w('const_4',          32, 'dados',     'const4.out',         'pcAdder.b'),
+  w('const_4',          32, 'constante', 'const4.out',         'pcAdder.b'),
   w('pc',               32, 'endereco',  'pc.out',             'imem.address', 'pcAdder.a'),
   w('pc_plus_4',        32, 'endereco',  'pcAdder.sum',        'muxPCSrc.in0', 'branchAdder.a', 'jumpConcat.pcPlus4'),
   w('instr',            32, 'instrucao', 'imem.instruction',   'fields.instruction'),
