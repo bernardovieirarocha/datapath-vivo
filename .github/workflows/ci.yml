@@ -30,13 +30,15 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      # O site é publicado pela Vercel (integração com o GitHub, a cada push na main).
+      # O GitHub Pages só serve um redirecionamento do endereço antigo para o novo.
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
-          path: dist
+          path: redirect-pages
 
   deploy:
-    name: Publicar no GitHub Pages
+    name: Redirecionar o endereço antigo (GitHub Pages)
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest

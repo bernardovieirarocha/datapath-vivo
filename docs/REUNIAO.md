@@ -1,6 +1,6 @@
 # Conversa com a professora — v0.1
 
-Site: https://bernardovieirarocha.github.io/datapath-vivo/
+Site: https://datapath-vivo.vercel.app/
 
 ## O que mostrar em 5 minutos
 

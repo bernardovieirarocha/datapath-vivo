@@ -14,3 +14,4 @@ simulation/
 # Material que não pode ir para o repositório público
 docs/ref/
 reference/pratica10/
+.vercel

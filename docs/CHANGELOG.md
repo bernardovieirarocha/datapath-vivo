@@ -257,3 +257,9 @@ A professora avaliou a v0.1 ("muito didática, vou usar nas minhas aulas") e ped
 - Laranja e verde trocados: o laranja dos campos da instrução (decodificação) ficava quase igual ao vermelho dos sinais de controle, que aparecem na mesma etapa, sobretudo no tema claro. Agora os **endereços** (busca: PC, PC + 4, destinos) são **laranja** e os **campos da instrução** são **verde-bandeira**.
 - Fio da constante **4** em **preto** (cor do texto): era azul como os dados e parecia pertencer à etapa de execução. A netlist ganhou a categoria de fio `constante`.
 - O e2e de cores confere as cinco: laranja (busca), verde (decodificação), vermelho (controle), azul (dados) e preto (constante).
+
+## Endereço novo na Vercel — out/2026
+
+- O site passou para **https://datapath-vivo.vercel.app**, sem o nome pessoal no endereço. Projeto `datapath-vivo` na conta Vercel `upwardweb`, ligado ao repositório: cada push na `main` publica em produção.
+- O GitHub Pages deixou de servir o app e passou a servir só `redirect-pages/index.html`, que leva o endereço antigo para o novo **mantendo a instrução do link** (`#/?i=…`). Links já enviados continuam funcionando.
+- O CI no GitHub continua rodando lint, testes, build e e2e em todo push.

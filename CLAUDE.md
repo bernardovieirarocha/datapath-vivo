@@ -29,7 +29,7 @@ Os slides (`docs/ref/`) e o Verilog da prática (`reference/pratica10/`) ficam s
 
 ## Stack e comandos
 
-- Vite + React 18 + TypeScript strict · Zustand · Vitest · Playwright · SVG escrito à mão · deploy no GitHub Pages.
+- Vite + React 18 + TypeScript strict · Zustand · Vitest · Playwright · SVG escrito à mão · deploy na **Vercel** (https://datapath-vivo.vercel.app, projeto `datapath-vivo` na conta `upwardweb`, automático a cada push na `main`). O GitHub Pages só redireciona o endereço antigo (`redirect-pages/`).
 - `npm run dev` · `npm test` · `npm run test:e2e` · `npm run lint` · `npm run build`.
 
 ## Jeito de trabalhar

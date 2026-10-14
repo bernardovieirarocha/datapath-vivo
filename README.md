@@ -4,7 +4,7 @@ Digite uma instrução MIPS e veja o caminho dela no **datapath monociclo**, int
 
 Ferramenta de apoio à disciplina teórica **AOC1 — CEFET-MG** (Prof.ª Poliana Corrêa), feita pela monitoria. O datapath, as tabelas e o vocabulário seguem os slides das Aulas 04, 06 e 07 (Patterson & Hennessy, cap. 4).
 
-**Site:** https://bernardovieirarocha.github.io/datapath-vivo/
+**Site:** https://datapath-vivo.vercel.app/
 
 ## O que dá para fazer (v0.1)
 
@@ -29,7 +29,7 @@ Outros comandos: `npm test` (testes de unidade), `npm run test:e2e` (testes no n
 
 ## Como é feito
 
-Vite + React 18 + TypeScript. Sem backend.
+Vite + React 18 + TypeScript. Sem backend. Publicado na Vercel a cada push na `main`; o endereço antigo no GitHub Pages redireciona para o novo (`redirect-pages/`).
 
 | Caminho | O que é |
 |---|---|
